@@ -1,14 +1,20 @@
 ﻿using NHibernate;
 using NHibernate.Criterion;
+using NHibernate.Engine;
+using NHibernate.Transform;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace Borigran.OneData.Platform.Data.NHibernate
 {
-    public class RepositoryBase<T> where T : class
+    public abstract class RepositoryBase<T> where T : class
     {
         private static readonly Order[] NullOrderArray = null;
 
@@ -151,7 +157,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
         /// <param name="orders"> the order to load the entities</param>
         /// <param name="pagingInfo">the paging information</param>
         /// <returns>All the entities that match the criteria</returns>
-        public ICollection<T> FindAll(DetachedCriteria criteria, IPagingInfo pagingInfo, params Order[] orders)
+        public ICollection<T> FindAll(DetachedCriteria criteria, PagingInfo pagingInfo, params Order[] orders)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
@@ -187,7 +193,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
         /// <param name="pagingInfo">The paging information</param>
         /// <param name="criteria">the cirteria to look for</param>
         /// <returns>number of Results of entities that match the criteria</returns>
-        public IPaginatedCollection<T> FindAll(IPagingInfo pagingInfo, params ICriterion[] criteria)
+        public ICollection<T> FindAll(PagingInfo pagingInfo, params ICriterion[] criteria)
         {
             return FindAll(pagingInfo, NullOrderArray, criteria);
         }
@@ -216,7 +222,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
         /// <param name="selectionOrder">The field the repository should order by</param>
         /// <returns>number of Results of entities that match the criteria</returns>
         /// </summary>
-        public IPaginatedCollection<T> FindAll(IPagingInfo pagingInfo, Order selectionOrder, params ICriterion[] criteria)
+        public ICollection<T> FindAll(PagingInfo pagingInfo, Order selectionOrder, params ICriterion[] criteria)
         {
             return FindAll(pagingInfo, new Order[] { selectionOrder }, criteria);
         }
@@ -249,7 +255,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
         /// <param name="criterion">the criterion to look for</param>
         /// <returns>number of Results of entities that match the criteria</returns>
         /// <param name="selectionOrder">The fields the repository should order by</param>
-        public IPaginatedCollection<T> FindAll(IPagingInfo pagingInfo, Order[] selectionOrder, params ICriterion[] criterion)
+        public ICollection<T> FindAll(PagingInfo pagingInfo, Order[] selectionOrder, params ICriterion[] criterion)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
@@ -510,7 +516,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
             }
         }
 
-        public IPaginatedCollection<TProj> ReportAll<TProj>(DetachedCriteria criteria, ProjectionList projectionList, IPagingInfo pagingInfo)
+        public ICollection<TProj> ReportAll<TProj>(DetachedCriteria criteria, ProjectionList projectionList, PagingInfo pagingInfo)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
@@ -537,12 +543,12 @@ namespace Borigran.OneData.Platform.Data.NHibernate
             }
         }
 
-        public IPaginatedCollection<TProj> ReportAll<TProj>(DetachedCriteria criteria, ProjectionList projectionList, IPagingInfo pagingInfo, params Order[] orders)
+        public ICollection<TProj> ReportAll<TProj>(DetachedCriteria criteria, ProjectionList projectionList, PagingInfo pagingInfo, params Order[] orders)
         {
             return ReportAll<TProj>(criteria, projectionList, pagingInfo, false, orders);
         }
 
-        public IPaginatedCollection<TProj> ReportAll<TProj>(DetachedCriteria criteria, ProjectionList projectionList, IPagingInfo pagingInfo, bool distinct, params Order[] orders)
+        public ICollection<TProj> ReportAll<TProj>(DetachedCriteria criteria, ProjectionList projectionList, PagingInfo pagingInfo, bool distinct, params Order[] orders)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
@@ -679,7 +685,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
             return Count(detached) != 0;
         }
 
-        private static IPaginatedCollection<TColItem> DoMultiCriteriaPaging<TColItem>(IMultiCriteria criteria, IPagingInfo pagingInfo)
+        private static ICollection<TColItem> DoMultiCriteriaPaging<TColItem>(IMultiCriteria criteria, PagingInfo pagingInfo)
         {
             IList results = (IList)criteria.List();
 
@@ -746,7 +752,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
 
         public object ExecuteStoredProcedure(string storedProcName, params Parameter[] parameters)
         {
-            IDbConnection connection = ((ISessionFactoryImplementor)SessionFactory).ConnectionProvider.GetConnection();
+            DbConnection connection = ((ISessionFactoryImplementor)SessionFactory).ConnectionProvider.GetConnection();
             try
             {
                 using (IDbCommand command = connection.CreateCommand())
@@ -783,7 +789,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
         public ICollection<T2> ExecuteStoredProcedure<T2>(Converter<IDataReader, T2> converter, string storedProcName,
                                                           params Parameter[] parameters)
         {
-            IDbConnection connection = ((ISessionFactoryImplementor)SessionFactory).ConnectionProvider.GetConnection();
+            DbConnection connection = ((ISessionFactoryImplementor)SessionFactory).ConnectionProvider.GetConnection();
 
             try
             {

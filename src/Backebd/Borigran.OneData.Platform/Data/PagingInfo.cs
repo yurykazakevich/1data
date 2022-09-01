@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Borigran.OneData.Platform.Data
 {
-    public class PagingInfo : IPagingInfo
+    public class PagingInfo
     {
         private readonly int pageNumber;
         private readonly int pageSize;
