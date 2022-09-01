@@ -1,13 +1,8 @@
 ﻿using NHibernate;
 using NHibernate.Criterion;
-using NHibernate.OData;
-using NHibernate.SqlCommand;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 
 namespace Borigran.OneData.Platform.NHibernate.Repository
 {
@@ -18,6 +13,18 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         protected virtual ISession Session
         {
             get { return session; }
+        }
+
+        protected override DisposableAction<ISession> ActionToBePerformedOnSessionUsedForDBFetches => throw new NotImplementedException();
+
+        /// <summary>
+        /// Returns the nhibernate <see cref="ISessionFactory"/> associated with current unit of work's
+        /// current nhibernate session, see <see cref="UnitOfWork.CurrentSession"/> and it's 
+        /// GetSessionImplementation() method.
+        /// </summary>
+        protected override ISessionFactory SessionFactory
+        {
+            get { return Session.GetSessionImplementation().Factory; }
         }
 
         public NHibernateRepository(ISession session)
