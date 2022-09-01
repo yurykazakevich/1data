@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Borigran.OneData.Platform.Data
+﻿namespace Borigran.OneData.Platform.Data
 {
     public class PagingInfo
     {
