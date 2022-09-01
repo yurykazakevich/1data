@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Borigran.OneData.Platform.Data.NHibernate
+namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     public class AliasDefinition
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Borigran.OneData.Platform.Data
+namespace Borigran.OneData.Platform.NHibernate
 {
     public class PaginatedList<T> : List<T>, ICollection<T>
     {

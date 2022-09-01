@@ -1,4 +1,4 @@
-﻿namespace Borigran.OneData.Platform.Data.NHibernate
+﻿namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     public enum ResultSetOptions
     {

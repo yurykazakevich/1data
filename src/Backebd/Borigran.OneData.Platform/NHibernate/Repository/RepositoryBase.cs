@@ -12,7 +12,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace Borigran.OneData.Platform.Data.NHibernate
+namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     public abstract class RepositoryBase<T> where T : class
     {

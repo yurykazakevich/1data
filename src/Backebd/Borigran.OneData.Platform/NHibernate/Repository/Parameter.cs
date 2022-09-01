@@ -1,6 +1,6 @@
 ﻿using NHibernate.Type;
 
-namespace Borigran.OneData.Platform.Data.NHibernate
+namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     /// <summary>
     /// Provides state container for passing database parameters using nHibernate specific types,

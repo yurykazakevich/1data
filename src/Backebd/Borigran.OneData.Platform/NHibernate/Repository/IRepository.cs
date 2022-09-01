@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Borigran.OneData.Platform.Data.NHibernate
+namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     /// <summary>
     /// <para>

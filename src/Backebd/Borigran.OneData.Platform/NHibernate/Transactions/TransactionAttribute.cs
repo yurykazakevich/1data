@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 
-namespace Borigran.OneData.Platform.Data.Transactions
+namespace Borigran.OneData.Platform.NHibernate.Transactions
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class TransactionAttribute : Attribute

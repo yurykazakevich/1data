@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Borigran.OneData.Platform.Data.Transactions
+namespace Borigran.OneData.Platform.NHibernate.Transactions
 {
     [DebuggerStepThrough]
     public class TransactionInterceptor : BaseInterceptor<TransactionInterceptor.TransactionState>, ISynchronization

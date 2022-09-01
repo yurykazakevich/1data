@@ -3,7 +3,7 @@ using System.Data;
 using NHibernate;
 using NHibernate.Criterion;
 
-namespace Borigran.OneData.Platform.Data.NHibernate
+namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     internal class RepositoryHelper<T>
     {

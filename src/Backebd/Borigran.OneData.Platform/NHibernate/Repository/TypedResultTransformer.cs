@@ -2,7 +2,7 @@
 using System;
 using System.Collections;
 
-namespace Borigran.OneData.Platform.Data.NHibernate
+namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     /// <summary>
     /// This is used to convert resulting tuples into strongly typed objects.

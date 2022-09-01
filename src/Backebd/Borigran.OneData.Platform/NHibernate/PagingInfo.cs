@@ -1,4 +1,4 @@
-﻿namespace Borigran.OneData.Platform.Data
+﻿namespace Borigran.OneData.Platform.NHibernate
 {
     public class PagingInfo
     {

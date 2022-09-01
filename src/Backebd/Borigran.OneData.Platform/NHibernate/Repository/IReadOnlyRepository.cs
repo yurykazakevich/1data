@@ -7,7 +7,7 @@ using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Transform;
 
-namespace Borigran.OneData.Platform.Data.NHibernate
+namespace Borigran.OneData.Platform.NHibernate.Repository
 {
     public interface IReadOnlyRepository<T> where T : class
     {
