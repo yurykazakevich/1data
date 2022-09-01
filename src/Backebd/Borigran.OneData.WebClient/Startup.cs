@@ -1,3 +1,6 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Borigran.OneData.Platform.Dependencies;
 using Borigran.OneData.WebClient.Pipeline;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,6 +23,8 @@ namespace Borigran.OneData.WebClient
 
         public IConfiguration Configuration { get; }
 
+        public ILifetimeScope AutofacContainer { get; private set; }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -32,9 +37,19 @@ namespace Borigran.OneData.WebClient
             });
         }
 
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            // Register your own things directly with Autofac here. Don't
+            // call builder.Populate(), that happens in AutofacServiceProviderFactory
+            // for you.
+            builder.RegisterModule(new OneDataAutofacModule());
+        }
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
