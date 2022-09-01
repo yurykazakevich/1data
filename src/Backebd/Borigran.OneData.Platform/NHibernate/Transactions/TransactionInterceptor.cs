@@ -1,5 +1,4 @@
-﻿using Castle.Core.Interceptor;
-using log4net;
+﻿using Castle.DynamicProxy;
 using Microsoft.Extensions.Logging;
 using NHibernate;
 using NHibernate.Transaction;

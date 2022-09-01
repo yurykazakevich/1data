@@ -1,4 +1,4 @@
-﻿using Castle.Core.Interceptor;
+﻿using Castle.DynamicProxy;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,7 +7,8 @@ namespace Borigran.OneData.Platform
 {
     public abstract class BaseInterceptor<TState> : IInterceptor where TState : class
     {
-        private static readonly MethodInfo interceptAsyncWithResultMethodInfo = typeof(BaseInterceptor<TState>).GetMethod("InterceptAsyncWithResult", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo interceptAsyncWithResultMethodInfo = 
+            typeof(BaseInterceptor<TState>).GetMethod("InterceptAsyncWithResult", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public void Intercept(IInvocation invocation)
         {
@@ -77,25 +78,6 @@ namespace Borigran.OneData.Platform
                 await task;
                 invocation.ReturnValue = null;
                 OnSuccess(invocation, state);
-            }
-            catch (Exception ex)
-            {
-                OnFailure(invocation, ex, state);
-                throw;
-            }
-        }
-
-        // ReSharper disable once UnusedMember.Local
-        private async Task<TTask> InterceptAsyncWithResult<TTask>(IInvocation invocation, TState state)
-        {
-            var task = invocation.ReturnValue as Task<TTask>;
-
-            try
-            {
-                var result = await task;
-                invocation.ReturnValue = result;
-                OnSuccess(invocation, state);
-                return result;
             }
             catch (Exception ex)
             {
