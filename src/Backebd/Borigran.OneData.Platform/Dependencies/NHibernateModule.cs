@@ -29,6 +29,9 @@ namespace Borigran.OneData.Platform.Dependencies
             }
 
             builder.RegisterType<TransactionInterceptor>()
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .InstancePerDependency()
                 .Named<IInterceptor>(GlobalStrings.DbTransactionInterceptorName);
         }
 
