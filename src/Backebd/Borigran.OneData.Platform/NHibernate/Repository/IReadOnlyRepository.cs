@@ -229,21 +229,5 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="alias"></param>
         /// <returns></returns>
         IQueryOver<T, T> QueryOver(Expression<Func<T>> alias);
-
-        /// <summary>
-        /// Read the unique checksum value of the object
-        /// </summary>
-        /// <param name="id">The entity's id</param>
-        /// <returns>Checksum</returns>
-        long Checksum(object id);
-
-        IEnumerable<T> ODataQuery(string query, ICriterion[] additionalFilters = null);
-        IEnumerable<T> ODataQuery(string query, Dictionary<string, string> aliases, ICriterion[] additionalFilters = null);
-
-        IEnumerable<T> ODataQueryWithInlineCount(string query, out int count, ICriterion[] additionalFilters = null);
-        IEnumerable<T> ODataQueryWithInlineCount(string query, out int count, IEnumerable<AliasDefinition> aliases, ICriterion[] additionalFilters = null);
-        IEnumerable<T> ODataQueryWithInlineCount(string query, out int count, Dictionary<string, string> aliases, ICriterion[] additionalFilters = null);
-
-        ICriteria ODataQueryCriteria(string query, int maxResults = 500);
     }
 }

@@ -6,7 +6,7 @@ namespace Borigran.OneData.Platform.Dependencies
     {
         protected override void Load(ContainerBuilder builder)
         {
-            
+            builder.RegisterModule<NHibernateModule>();
         }
     }
 }
