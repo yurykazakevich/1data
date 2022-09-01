@@ -1,8 +1,9 @@
-﻿using IntelliFlo.Platform;
-using NHibernate;
+﻿using NHibernate;
 using NHibernate.Criterion;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Borigran.OneData.Platform.Data.NHibernate
@@ -150,7 +151,7 @@ namespace Borigran.OneData.Platform.Data.NHibernate
         /// <param name="orders"> the order to load the entities</param>
         /// <param name="pagingInfo">the paging information</param>
         /// <returns>All the entities that match the criteria</returns>
-        public IPaginatedCollection<T> FindAll(DetachedCriteria criteria, IPagingInfo pagingInfo, params Order[] orders)
+        public ICollection<T> FindAll(DetachedCriteria criteria, IPagingInfo pagingInfo, params Order[] orders)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
