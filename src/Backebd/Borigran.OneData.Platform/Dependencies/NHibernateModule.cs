@@ -85,7 +85,10 @@ namespace Borigran.OneData.Platform.Dependencies
                 .ExposeConfiguration(c => c.SetProperty(Environment.ShowSql, "true"))
                 .Mappings(m =>
                 {
-                    m.FluentMappings.AddFromAssembly(Assembly.GetAssembly(typeof(MapBase<>)));
+                    foreach (Assembly assembly in assemblyScanner.AssembliesToScan())
+                    {
+                        m.FluentMappings.AddFromAssembly(assembly);
+                    }
                 })
                 .ExposeConfiguration(BuildSchema)
                 .BuildConfiguration();
@@ -94,17 +97,6 @@ namespace Borigran.OneData.Platform.Dependencies
                 throw new Exception("Cannot build NHibernate configuration");
 
             return config;
-        }
-
-        public AutoPersistenceModel BuildPersistenceModel()
-        {
-            var persistenceModel = new AutoPersistenceModel();
-
-            persistenceModel.AddMappingsFromAssembly(Assembly.GetAssembly(typeof(MapBase<>)));
-
-            persistenceModel.WriteMappingsTo(@"./");
-
-            return persistenceModel;
         }
 
         public ISessionFactory BuildSessionFactory(Configuration config)

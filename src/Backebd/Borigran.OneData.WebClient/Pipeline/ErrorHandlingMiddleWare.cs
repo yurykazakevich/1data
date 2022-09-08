@@ -20,7 +20,6 @@ namespace Borigran.OneData.WebClient.Pipeline
         {
             try
             {
-                logger.LogInformation("It's OK");
                 next.Invoke(context);
             }
             catch(Exception ex)

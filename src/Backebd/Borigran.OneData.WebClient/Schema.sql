@@ -11,7 +11,7 @@
 
     create table TImages (
         ImageID INT IDENTITY NOT NULL,
-       ImageType NVARCHAR(255) null,
+       ImageType INT null,
        ImageData VARBINARY(MAX) null,
        primary key (ImageID)
     )

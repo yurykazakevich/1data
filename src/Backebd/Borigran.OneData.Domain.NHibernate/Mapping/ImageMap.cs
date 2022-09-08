@@ -7,7 +7,7 @@ namespace Borigran.OneData.Domain.NHibernate.Mapping
         public ImageMap()
             : base()
         {
-            Map(x => x.ImageType);
+            Map(x => x.ImageType).CustomType(typeof(int));
             Map(x => x.ImageData);
         }
     }
