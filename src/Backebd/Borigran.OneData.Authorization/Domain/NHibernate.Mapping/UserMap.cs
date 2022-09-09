@@ -9,7 +9,7 @@ namespace Borigran.OneData.Authorization.Domain.NHibernate.Mapping
             :base()
         {
             Map(x => x.PhoneNumber)
- //               .Index($"{nameof(User.PhoneNumber)}_IDX")
+                .Index($"{nameof(User.PhoneNumber)}_IDX")
                 .UniqueKey($"{nameof(User.PhoneNumber)}_UK");
             Map(x => x.RefreshToken);
             Map(x => x.RefreshTokenExpired);

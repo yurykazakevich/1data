@@ -30,7 +30,9 @@ namespace Borigran.OneData.WebClient.Pipeline
 
         private void LogException(Exception ex)
         {
-            logger.LogError(ex, ex.Message);
+            var errorId = new EventId(DateTime.Now.GetHashCode());
+
+            logger.LogError(errorId, ex, ex.Message);
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using Borigran.OneData.Domain.Entities;
-using Borigran.OneData.Platform.NHibernate.Repository;
+﻿using Borigran.OneData.Platform.NHibernate.Repository;
 using Borigran.OneData.Platform.NHibernate.Transactions;
 using NHibernate.Criterion;
 using System.Security.Claims;
@@ -8,26 +7,58 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Borigran.OneData.Authorization.Domain.Entities;
+using Borigran.OneData.Platform.Encryption;
 
-namespace Borigran.OneData.Authorization.Jwt
+namespace Borigran.OneData.Authorization.Impl
 {
     public class AuthService : IAuthService, ITransactionContainer
     {
         private readonly IRepository<User> userRepository;
 
-        public AuthService(IRepository<User> userRepository)
+        private readonly AuthOptions authOptions;
+
+        private readonly ISmsSender smsSender;
+
+        private readonly IHashEncryptor encryptor;
+
+        public AuthService(IRepository<User> userRepository, 
+            AuthOptions authOptions, 
+            ISmsSender smsSender,
+            IHashEncryptor encryptor)
         {
             this.userRepository = userRepository;
+            this.authOptions = authOptions;
+            this.smsSender = smsSender;
+            this.encryptor = encryptor;
         }
 
+        public string GetVerificationCode(string phoneNumber)
+        {
+            int code = new Random().Next(111111,999999);
+#if DEBUG
+            code = 123456;
+#endif
+            var smsResponse = smsSender.SendAuthCode(phoneNumber, code);
+
+            //TODO: Add response validation
+
+            string encriptedCode = encryptor.GetHash(code.ToString());
+
+            return encriptedCode;
+        }
         public User FindUser(string phoneNumber)
         {
             return userRepository.FindOne(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
         }
 
         [Transaction]
-        public User RegisterOrLogin(string phoneNumber)
+        public User RegisterOrLogin(string phoneNumber, string verificationCode, int userProvidedCode)
         {
+            if (!ValdateCode(verificationCode, userProvidedCode))
+            {
+                throw new SecurityTokenException("Invalidverification code");
+            }
+
             var user = FindUser(phoneNumber);
 
             if (user == null)
@@ -60,14 +91,13 @@ namespace Borigran.OneData.Authorization.Jwt
 
         public string GenerateAccessToken(IEnumerable<Claim> claims)
         {
-
             var signinCredentials = AuthOptions.GetSymmetricSecurityKey();
 
             var tokeOptions = new JwtSecurityToken(
-                    issuer: AuthOptions.ISSUER,
-                    audience: AuthOptions.AUDIENCE,
+                    issuer: authOptions.Issuer,
+                    audience: authOptions.Audience,
                     claims: claims,
-                    expires: DateTime.Now.AddMinutes(AuthOptions.AUTHTOKENEXPIRED),
+                    expires: DateTime.Now.AddMinutes(authOptions.AutheTokenExpired),
                     signingCredentials:
                         new SigningCredentials(signinCredentials, SecurityAlgorithms.HmacSha256)
             );
@@ -127,7 +157,7 @@ namespace Borigran.OneData.Authorization.Jwt
         private void UpdateRefreshToken(User user)
         {
             user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpired = DateTime.Now.AddMinutes(AuthOptions.REFRESHTOKENEXPIRED);
+            user.RefreshTokenExpired = DateTime.Now.AddMinutes(authOptions.RefreshTokenExpired);
         }
 
         private string GenerateRefreshToken()
@@ -138,6 +168,11 @@ namespace Borigran.OneData.Authorization.Jwt
                 rng.GetBytes(randomNumber);
                 return Convert.ToBase64String(randomNumber);
             }
+        }
+
+        private bool ValdateCode(string verificationCode, int userProvidedCode)
+        {
+            return encryptor.ValidateHash(verificationCode, userProvidedCode.ToString());
         }
     }
 }

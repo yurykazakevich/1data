@@ -71,11 +71,5 @@ namespace Borigran.OneData.Platform
             if (string.IsNullOrWhiteSpace(toCheck))
                 throw new AssertionFailedException(string.Format(message, values));
         }
-
-        public static void IsUtc(DateTime value)
-        {
-            if (value.Kind != DateTimeKind.Utc)
-                throw new ArgumentException("DateTime.Kind must be Utc");
-        }
     }
 }
