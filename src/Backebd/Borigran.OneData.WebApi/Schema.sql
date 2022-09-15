@@ -26,3 +26,5 @@
        ImageData VARBINARY(MAX) null,
        primary key (ImageID)
     )
+
+    create index PhoneNumber_IDX on TUsers (PhoneNumber)

@@ -15,6 +15,9 @@ namespace Borigran.OneData.Authorization.Dependencies
         {
             builder.RegisterInstance(authOptions).SingleInstance();
 
+            builder.RegisterType<SmsSender>()
+                .As<ISmsSender>()
+                .InstancePerLifetimeScope();
             builder.RegisterType<AuthService>()
                 .As<IAuthService>()
                 .InstancePerLifetimeScope();
