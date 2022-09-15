@@ -12,7 +12,7 @@ namespace Borigran.OneData.Authorization.Impl
             this.httpHelper = httpHelper;
         }
 
-        public SmsServiceResponse SendAuthCode(string phoneNumber, int code)
+        public async Task<SmsServiceResponse> SendAuthCodeAsync(string phoneNumber, int code)
         {
             return new SmsServiceResponse();
         }

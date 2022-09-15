@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Borigran.OneData.Platform.NHibernate.Transactions
 {
@@ -111,6 +112,24 @@ namespace Borigran.OneData.Platform.NHibernate.Transactions
             }
         }
 
+        public override async Task OnSuccessActionAsync(IInvocation invocation, TransactionState state)
+        {
+            if(state == null) return;
+
+            var methodName = invocation.Method.Name;
+            var tx = state.Transaction;
+            logger.LogDebug("Committing transaction ({0})", methodName);
+            try
+            {
+                await tx.CommitAsync();
+            }
+            finally
+            {
+                tx.Dispose();
+            }
+        }
+
+
 
         /// <summary>
         /// Called if the operation has failed with an exception
@@ -125,9 +144,6 @@ namespace Borigran.OneData.Platform.NHibernate.Transactions
             var methodName = invocation.Method.Name;
             var tx = state.Transaction;
 
-            // This is not necessarily an error. Some exceptions will be returned as 400 
-            // or as 403 responses, others as 500. Log this as debug info message only.
-            // Global logging handler will log this exception if this results in 5xx error
             logger.LogInformation("Transaction rolling back ({0})", ex, methodName);
             try
             {
@@ -139,6 +155,27 @@ namespace Borigran.OneData.Platform.NHibernate.Transactions
                 tx.Dispose();
             }
         }
+
+
+        public override async Task OnFailureActionAsync(IInvocation invocation, Exception ex, TransactionState state)
+        {
+            if (state == null) return;
+
+            var methodName = invocation.Method.Name;
+            var tx = state.Transaction;
+
+            logger.LogInformation("Transaction rolling back ({0})", ex, methodName);
+            try
+            {
+                if (tx.IsActive)
+                    await tx.RollbackAsync();
+            }
+            finally
+            {
+                tx.Dispose();
+            }
+        }
+
 
         /// <summary>
         /// Callback from tx.RegisterSynchronization()

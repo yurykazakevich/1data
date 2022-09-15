@@ -1,8 +1,7 @@
 ﻿using NHibernate;
-using NHibernate.Criterion;
 using System;
 using System.Collections;
-using System.Globalization;
+using System.Threading.Tasks;
 
 namespace Borigran.OneData.Platform.NHibernate.Repository
 {
@@ -38,21 +37,9 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// </summary>
         /// <param name="id">The entity's id</param>
         /// <returns>Either the entity that matches the id, or a null</returns>
-        public T Get(object id)
+        public async Task<T> GetAsync(object id)
         {
-            return (T)Session.Get(typeof(T), id);
-        }
-
-        /// <summary>
-        /// Load the entity from the persistance store
-        /// Will throw an exception if there isn't an entity that matches
-        /// the id.
-        /// </summary>
-        /// <param name="id">The entity's id</param>
-        /// <returns>The entity that matches the id</returns>
-        public T Load(object id)
-        {
-            return (T)Session.Load(typeof(T), id);
+            return (T) await Session.GetAsync(typeof(T), id);
         }
 
         /// <summary>
@@ -60,48 +47,11 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// is completed. 
         /// </summary>
         /// <param name="entity">The entity to delete</param>
-        public void Delete(T entity)
+        public async Task DeleteAsync(T entity)
         {
-            Session.Delete(entity);
+            await Session.DeleteAsync(entity);
         }
 
-        /// <summary>
-        /// Registers all entities for deletion when the unit of work
-        /// is completed.
-        /// </summary>
-        public void DeleteAll()
-        {
-            Session.Delete(String.Format(CultureInfo.InvariantCulture, "from {0}", typeof(T).Name));
-        }
-
-        /// <summary>
-        /// Registers all entities for deletion that match the supplied
-        /// named query when the unit of work is completed.
-        /// </summary>
-        /// <param name="namedQuery">The named query to execute</param>
-        /// <param name="parameters">Parameters for the query</param>
-        public void DeleteAll(string namedQuery, params Parameter[] parameters)
-        {
-            IQuery query = RepositoryHelper<T>.CreateQuery(Session, namedQuery, parameters);
-
-            foreach (T entity in query.List<T>())
-            {
-                Session.Delete(entity);
-            }
-        }
-
-        /// <summary>
-        /// Registers all entities for deletion that match the supplied
-        /// criteria condition when the unit of work is completed.
-        /// </summary>
-        /// <param name="where">criteria condition to select the rows to be deleted</param>
-        public void DeleteAll(DetachedCriteria where)
-        {
-            foreach (object entity in where.GetExecutableCriteria(Session).List())
-            {
-                Session.Delete(entity);
-            }
-        }
 
         /// <summary>
         /// Register te entity for save in the database when the unit of work
@@ -109,9 +59,9 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// </summary>
         /// <param name="entity">the entity to save</param>
         /// <returns>The saved entity</returns>
-        public T Save(T entity)
+        public async Task<T> SaveAsync(T entity)
         {
-            Session.Save(entity);
+            await Session.SaveAsync(entity);
             return entity;
         }
 
@@ -120,20 +70,10 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>The saved or updated entity</returns>
-        public T SaveOrUpdate(T entity)
+        public async Task<T> SaveOrUpdateAsync(T entity)
         {
-            Session.SaveOrUpdate(entity);
+            await Session.SaveOrUpdateAsync(entity);
             return entity;
-        }
-
-        /// <summary>
-        /// Saves or update the copy of entity, based on its usaved-value
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns>The saved entity</returns>
-        public T SaveOrUpdateCopy(T entity)
-        {
-            return (T)Session.Merge(entity);
         }
 
         /// <summary>
@@ -141,9 +81,9 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// is completed. (UPDATE)
         /// </summary>
         /// <param name="entity"></param>
-        public void Update(T entity)
+        public async Task UpdateAsync(T entity)
         {
-            Session.Update(entity);
+            await Session.UpdateAsync(entity);
         }
 
         /// <summary>

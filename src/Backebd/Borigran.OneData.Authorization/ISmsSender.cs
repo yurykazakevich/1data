@@ -4,6 +4,6 @@ namespace Borigran.OneData.Authorization
 {
     public interface ISmsSender
     {
-        SmsServiceResponse SendAuthCode(string phoneNumber, int code);
+        Task<SmsServiceResponse> SendAuthCodeAsync(string phoneNumber, int code);
     }
 }

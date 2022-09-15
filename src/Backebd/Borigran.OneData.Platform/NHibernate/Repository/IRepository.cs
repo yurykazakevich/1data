@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Borigran.OneData.Platform.NHibernate.Repository
 {
@@ -26,28 +27,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// is completed. 
         /// </summary>
         /// <param name="entity">The entity to delete</param>
-        void Delete(T entity);
-
-        /// <summary>
-        /// Registers all entities for deletion when the unit of work
-        /// is completed.
-        /// </summary>
-        void DeleteAll();
-
-        /// <summary>
-        /// Registers all entities for deletion that match the supplied
-        /// criteria condition when the unit of work is completed.
-        /// </summary>
-        /// <param name="where">criteria condition to select the rows to be deleted</param>
-        void DeleteAll(DetachedCriteria where);
-
-        /// <summary>
-        /// Registers all entities for deletion that match the supplied
-        /// named query when the unit of work is completed.
-        /// </summary>
-        /// <param name="namedQuery">The named query to execute</param>
-        /// <param name="parameters">Parameters for the query</param>
-        void DeleteAll(string namedQuery, params Parameter[] parameters);
+        Task DeleteAsync(T entity);
 
         /// <summary>
         /// Register te entity for save in the database when the unit of work
@@ -55,36 +35,21 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// </summary>
         /// <param name="entity">the entity to save</param>
         /// <returns>The saved entity</returns>
-        T Save(T entity);
+        Task<T> SaveAsync(T entity);
 
         /// <summary>
         /// Saves or update the entity, based on its usaved-value
         /// </summary>
         /// <param name="entity"></param>
         /// <returns>The saved or updated entity</returns>
-        T SaveOrUpdate(T entity);
-
-        /// <summary>
-        /// Saves or update the copy of entity, based on its usaved-value
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns>The saved entity</returns>
-        T SaveOrUpdateCopy(T entity);
+        Task<T> SaveOrUpdateAsync(T entity);
 
         /// <summary>
         /// Register the entity for update in the database when the unit of work
         /// is completed. (UPDATE)
         /// </summary>
         /// <param name="entity"></param>
-        void Update(T entity);
-
-        /// <summary>
-        /// Update or delete using a named query
-        /// </summary>
-        /// <param name="namedQuery">the named query in mapping file</param>
-        /// <param name="parameters">parameters</param>
-        /// <param name="parameterlist">parameter list </param>
-        void UpdateOrDelete(string namedQuery, Tuple<string, IEnumerable> parameterlist = null, params Parameter[] parameters);
+        Task UpdateAsync(T entity);
 
         /// <summary>
         /// Loads all the entities that match the criteria
@@ -93,7 +58,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="order"></param>
         /// <param name="criteria">the criteria to look for</param>
         /// <returns>All the entities that match the criteria</returns>
-        ICollection<T> FindAll(Order order, params ICriterion[] criteria);
+        Task<ICollection<T>> FindAllAsync(Order order, params ICriterion[] criteria);
 
         /// <summary>
         /// Loads all the entities that match the criteria
@@ -102,7 +67,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="criteria">the criteria to look for</param>
         /// <param name="orders"> the order to load the entities</param>
         /// <returns>All the entities that match the criteria</returns>
-        ICollection<T> FindAll(DetachedCriteria criteria, params Order[] orders);
+        Task<ICollection<T>> FindAllAsync(DetachedCriteria criteria, params Order[] orders);
 
         /// <summary>
         /// Loads all the entities that match the criteria(s)
@@ -110,14 +75,14 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="options">The result set options</param>
         /// <param name="criteria">the criteria(s) to look for</param>
         /// <returns>All the entities that match the criteria(s)</returns>
-        ICollection<T> FindAll(ResultSetOptions options, params DetachedCriteria[] criteria);
+        Task<ICollection<T>> FindAllAsync(ResultSetOptions options, params DetachedCriteria[] criteria);
 
         /// <summary>
         /// Loads all the entities that match the criteria(s), defaults to include duplicates
         /// </summary>
         /// <param name="criteria">the criteria(s) to look for</param>
         /// <returns>All the entities that match the criteria(s)</returns>
-        ICollection<T> FindAll(DetachedCriteria[] criteria);
+        Task<ICollection<T>> FindAllAsync(DetachedCriteria[] criteria);
 
         /// <summary>
         /// Loads all the entities that match the criteria
@@ -128,7 +93,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="firstResult">the first result to load</param>
         /// <param name="maxResults">the number of result to load</param>
         /// <returns>All the entities that match the criteria</returns>
-        ICollection<T> FindAll(DetachedCriteria criteria,
+        Task<ICollection<T>> FindAllAsync(DetachedCriteria criteria,
                                int firstResult, int maxResults,
                                params Order[] orders);
 
@@ -140,7 +105,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="pagingInfo">the paging information</param>
         /// <param name="orders"> the order to load the entities</param>
         /// <returns>All the entities that match the criteria</returns>
-        ICollection<T> FindAll(DetachedCriteria criteria,
+        Task<ICollection<T>> FindAllAsync(DetachedCriteria criteria,
                                PagingInfo pagingInfo,
                                params Order[] orders);
 
@@ -152,14 +117,14 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="orders"></param>
         /// <param name="criteria">the criteria to look for</param>
         /// <returns>All the entities that match the criteria</returns>
-        ICollection<T> FindAll(Order[] orders, params ICriterion[] criteria);
+        Task<ICollection<T>> FindAllAsync(Order[] orders, params ICriterion[] criteria);
 
         /// <summary>
         /// Loads all the entities that match the criteria
         /// </summary>
         /// <param name="criteria">the criteria to look for</param>
         /// <returns>All the entities that match the criteria</returns>
-        ICollection<T> FindAll(params ICriterion[] criteria);
+        Task<ICollection<T>> FindAllAsync(params ICriterion[] criteria);
 
         /// <summary>
         /// Loads all the entities that match the criteria, and allow paging.
@@ -168,7 +133,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="numberOfResults">Total number of results to load</param>
         /// <param name="criteria">the cirteria to look for</param>
         /// <returns>number of Results of entities that match the criteria</returns>
-        ICollection<T> FindAll(int firstResult, int numberOfResults, params ICriterion[] criteria);
+        Task<ICollection<T>> FindAllAsync(int firstResult, int numberOfResults, params ICriterion[] criteria);
 
         /// <summary>
         /// Loads all the entities that match the criteria, and allow paging.
@@ -176,7 +141,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="pagingInfo">the paging information</param>
         /// <param name="criteria">the cirteria to look for</param>
         /// <returns>number of Results of entities that match the criteria</returns>
-        ICollection<T> FindAll(PagingInfo pagingInfo, params ICriterion[] criteria);
+        Task<ICollection<T>> FindAllAsync(PagingInfo pagingInfo, params ICriterion[] criteria);
 
         /// <summary>
         /// Loads all the entities that match the criteria, with paging 
@@ -188,7 +153,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="selectionOrder">The field the repository should order by</param>
         /// <returns>number of Results of entities that match the criteria</returns>
         /// </summary>
-        ICollection<T> FindAll(int firstResult, int numberOfResults,
+        Task<ICollection<T>> FindAllAsync(int firstResult, int numberOfResults,
                                Order selectionOrder,
                                params ICriterion[] criteria);
 
@@ -201,7 +166,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="selectionOrder">The field the repository should order by</param>
         /// <returns>number of Results of entities that match the criteria</returns>
         /// </summary>
-        ICollection<T> FindAll(PagingInfo pagingInfo,
+        Task<ICollection<T>> FindAllAsync(PagingInfo pagingInfo,
                                Order selectionOrder,
                                params ICriterion[] criteria);
 
@@ -214,7 +179,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="criteria">the cirteria to look for</param>
         /// <returns>number of Results of entities that match the criteria</returns>
         /// <param name="selectionOrder">The fields the repository should order by</param>
-        ICollection<T> FindAll(int firstResult, int numberOfResults,
+        Task<ICollection<T>> FindAllAsync(int firstResult, int numberOfResults,
                                Order[] selectionOrder,
                                params ICriterion[] criteria);
 
@@ -226,7 +191,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="criteria">the cirteria to look for</param>
         /// <returns>number of Results of entities that match the criteria</returns>
         /// <param name="selectionOrder">The fields the repository should order by</param>
-        ICollection<T> FindAll(PagingInfo pagingInfo,
+        Task<ICollection<T>> FindAllAsync(PagingInfo pagingInfo,
                                Order[] selectionOrder,
                                params ICriterion[] criteria);
 
@@ -237,7 +202,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="namedQuery">The named query to execute</param>
         /// <param name="parameters">Parameters for the query</param>
         /// <returns>The results of the query</returns>
-        ICollection<T> FindAll(string namedQuery, params Parameter[] parameters);
+        Task<ICollection<T>> FindAllAsync(string namedQuery, params Parameter[] parameters);
 
         /// <summary>
         /// Execute the named query and return paged results
@@ -247,7 +212,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="firstResult">The first result to return</param>
         /// <param name="numberOfResults">number of records to return</param>
         /// <returns>Paged results of the query</returns>
-        ICollection<T> FindAll(int firstResult,
+        Task<ICollection<T>> FindAllAsync(int firstResult,
             int numberOfResults, string namedQuery,
             params Parameter[] parameters);
 
@@ -257,7 +222,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// </summary>
         /// <param name="criteria">The criteria to look for</param>
         /// <returns>The entity or null</returns>
-        T FindOne(params ICriterion[] criteria);
+        Task<T> FindOneAsync(params ICriterion[] criteria);
 
         /// <summary>
         /// Find a single entity based on a criteria.
@@ -265,7 +230,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// </summary>
         /// <param name="criteria">The criteria to look for</param>
         /// <returns>The entity or null</returns>
-        T FindOne(params DetachedCriteria[] criteria);
+        Task<T> FindOneAsync(params DetachedCriteria[] criteria);
 
         /// <summary>
         /// Find a single entity based on a criteria.
@@ -273,7 +238,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// </summary>
         /// <param name="criteria">The criteria to look for</param>
         /// <returns>The entity or null</returns>
-        T FindOne(DetachedCriteria criteria);
+        Task<T> FindOneAsync(DetachedCriteria criteria);
 
         /// <summary>
         /// Find a single entity based on a named query.
@@ -282,34 +247,19 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="parameters">parameters for the query</param>
         /// <param name="namedQuery">the query to executre</param>
         /// <returns>The entity or null</returns>
-        T FindOne(string namedQuery, params Parameter[] parameters);
-
-        /// <summary>
-        /// Find the entity based on a criteria.
-        /// </summary>
-        /// <param name="criteria">The criteria to look for</param>
-        /// <param name="orders">Optional orderring</param>
-        /// <returns>The entity or null</returns>
-        T FindFirst(DetachedCriteria criteria, params Order[] orders);
-
-        /// <summary>
-        /// Find the first entity of type
-        /// </summary>
-        /// <param name="orders">Optional orderring</param>
-        /// <returns>The entity or null</returns>
-        T FindFirst(params Order[] orders);
+        Task<T> FindOneAsync(string namedQuery, params Parameter[] parameters);
 
         /// <summary>
         /// Check if any instance of the type exists
         /// </summary>
         /// <returns><c>true</c> if an instance is found; otherwise <c>false</c>.</returns>
-        bool Exists();
+        Task<bool> ExistsAsync();
 
         /// <summary>
         /// Counts the overall number of instances.
         /// </summary>
         /// <returns></returns>
-        long Count();
+        Task<long> CountAsync();
 
         /// <summary>
         /// Creates a <see cref="DetachedCriteria"/> compatible with this Repository
@@ -323,16 +273,5 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         /// <param name="aliasName">the alias</param>
         /// <returns>The <see cref="DetachedCriteria"/></returns>
         DetachedCriteria CreateDetachedCriteria(string aliasName);
-
-        /// <summary>
-        /// Execute the specified stored procedure with the given parameters
-        /// and return the result.
-        /// Note: only scalar values are supported using this approach.
-        /// </summary>
-        /// <param name="storedProcName">The name of the stored procedure</param>
-        /// <param name="parameters">parameters for the stored procedure</param>
-        /// <returns>return value</returns>
-        object ExecuteStoredProcedure(string storedProcName, params Parameter[] parameters);
-
     }
 }

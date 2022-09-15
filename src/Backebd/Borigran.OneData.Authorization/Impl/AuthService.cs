@@ -32,13 +32,13 @@ namespace Borigran.OneData.Authorization.Impl
             this.encryptor = encryptor;
         }
 
-        public string GetVerificationCode(string phoneNumber)
+        public async Task<string> GetVerificationCodeAsync(string phoneNumber)
         {
             int code = new Random().Next(111111,999999);
 #if DEBUG
             code = 123456;
 #endif
-            var smsResponse = smsSender.SendAuthCode(phoneNumber, code);
+            var smsResponse = await smsSender.SendAuthCodeAsync(phoneNumber, code);
 
             //TODO: Add response validation
 
@@ -46,20 +46,20 @@ namespace Borigran.OneData.Authorization.Impl
 
             return encriptedCode;
         }
-        public User FindUser(string phoneNumber)
+        public async Task<User> FindUserAsync(string phoneNumber)
         {
-            return userRepository.FindOne(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
+            return await userRepository.FindOneAsync(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
         }
 
         [Transaction]
-        public User RegisterOrLogin(string phoneNumber, string verificationCode, int userProvidedCode)
+        public async Task<User> RegisterOrLoginAsync(string phoneNumber, string verificationCode, int userProvidedCode)
         {
             if (!ValdateCode(verificationCode, userProvidedCode))
             {
                 throw new SecurityTokenException("Invalidverification code");
             }
 
-            var user = FindUser(phoneNumber);
+            var user = await FindUserAsync(phoneNumber);
 
             if (user == null)
             {
@@ -71,21 +71,21 @@ namespace Borigran.OneData.Authorization.Impl
 
             UpdateRefreshToken(user);
 
-            userRepository.SaveOrUpdate(user);
+            await userRepository.SaveOrUpdateAsync(user);
             return user;
         }
 
         [Transaction]
-        public void Logout(string phoneNumber)
+        public async Task LogoutAsync(string phoneNumber)
         {
-            var user = FindUser(phoneNumber);
+            var user = await FindUserAsync(phoneNumber);
 
             if (user != null)
             {
                 user.RefreshToken = null;
                 user.RefreshTokenExpired = null;
 
-                userRepository.Update(user);
+                await userRepository.UpdateAsync(user);
             }
         }
 
@@ -107,7 +107,7 @@ namespace Borigran.OneData.Authorization.Impl
         }
 
         [Transaction]
-        public string RefreshExpiredToken(string expiredToken, string refreshToken, string phoneNumber)
+        public async Task<string> RefreshExpiredTokenAsync(string expiredToken, string refreshToken, string phoneNumber)
         {
             var principal = GetPrincipalFromExpiredToken(expiredToken);
             if (principal.Identity != null && principal.Identity.Name != phoneNumber)
@@ -115,7 +115,7 @@ namespace Borigran.OneData.Authorization.Impl
                 throw new SecurityTokenException("Invalid user");
             }
 
-            var user = FindUser(phoneNumber);
+            var user = await FindUserAsync(phoneNumber);
             if (user == null)
             {
                 throw new SecurityTokenException("User not found");
@@ -129,7 +129,7 @@ namespace Borigran.OneData.Authorization.Impl
 
             UpdateRefreshToken(user);
 
-            userRepository.Update(user);
+            await userRepository.UpdateAsync(user);
 
             return user.RefreshToken;
         }
@@ -174,5 +174,6 @@ namespace Borigran.OneData.Authorization.Impl
         {
             return encryptor.ValidateHash(verificationCode, userProvidedCode.ToString());
         }
+
     }
 }
