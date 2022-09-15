@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace Borigran.OneData.WebClient.Pipeline
+namespace Borigran.OneData.WebApi.Pipeline
 {
     public class ErrorHandlingMiddleWare
     {

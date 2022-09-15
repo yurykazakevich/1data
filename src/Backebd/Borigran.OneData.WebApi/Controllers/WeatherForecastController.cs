@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Borigran.OneData.WebClient.Controllers
+namespace Borigran.OneData.WebApi.Controllers
 {
     public class WeatherForecastController : ApiControllerBase
     {

@@ -3,7 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Borigran.OneData.Authorization;
 using Borigran.OneData.Authorization.Dependencies;
 using Borigran.OneData.Platform.Dependencies;
-using Borigran.OneData.WebClient.Pipeline;
+using Borigran.OneData.WebApi.Pipeline;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 
-namespace Borigran.OneData.WebClient
+namespace Borigran.OneData.WebApi
 {
     public class Startup
     {

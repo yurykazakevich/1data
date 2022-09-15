@@ -1,6 +1,6 @@
 using System;
 
-namespace Borigran.OneData.WebClient
+namespace Borigran.OneData.WebApi
 {
     public class WeatherForecast
     {

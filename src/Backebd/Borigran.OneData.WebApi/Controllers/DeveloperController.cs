@@ -1,9 +1,10 @@
 ﻿using Borigran.OneData.Authorization;
-using Borigran.OneData.WebClient.Controllers.Developer.Models;
+using Borigran.OneData.WebApi.Models.Developer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using System.Security.Claims;
 
-namespace Borigran.OneData.WebClient.Controllers.Developer
+namespace Borigran.OneData.WebApi.Controllers
 {
     [Route("dev")]
     public class DeveloperController : ApiControllerBase
@@ -16,7 +17,7 @@ namespace Borigran.OneData.WebClient.Controllers.Developer
         }
 
         [HttpGet("token")]
-        public IActionResult GetToken()
+        public ActionResult<TokenResponse> GetToken()
         {
             var claim = new Claim(ClaimTypes.Name, "developer");
             string token = authService.GenerateAccessToken(new Claim[] { claim });

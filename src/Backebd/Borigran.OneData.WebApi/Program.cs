@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Borigran.OneData.WebClient
+namespace Borigran.OneData.WebApi
 {
     public class Program
     {
