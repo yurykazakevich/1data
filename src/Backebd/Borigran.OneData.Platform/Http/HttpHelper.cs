@@ -53,36 +53,5 @@ namespace Borigran.OneData.Platform.Http
                 throw;
             }
         }
-
-        public HttpResponseMessage SendWebRequest(HttpRequestMessage request)
-        {
-            try
-            {
-                var requestBody = "<hidden>";
-#if DEBUG
-                requestBody = request.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
-#endif
-
-                logger.LogDebug("Send HTTPRequest: URL:{0}, Method: {1}, Headers:{2}, Body:{3}",
-                    request.RequestUri, request.Method, request.Headers.Select(x => x.ToString()),
-                    requestBody);
-
-                var response = client.Send(request);
-                var responseBody = "<hidden>";
-#if DEBUG
-                responseBody = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-#endif
-                logger.LogDebug("Receive HttpResponse: Status:{0}, Content:{1}",
-                    response.StatusCode, responseBody);
-
-                return response;
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "HTTP request failed: URL:{0}, Method: {1}", 
-                    request.RequestUri, request.Method);
-                throw;
-            }
-        }
     }
 }

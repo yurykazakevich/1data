@@ -5,8 +5,6 @@ namespace Borigran.OneData.Platform.Http
 {
     public interface IHttpHelper
     {
-        HttpResponseMessage SendWebRequest(HttpRequestMessage request);
-
         Task<HttpResponseMessage> SendRequestAsync(HttpRequestMessage request);
     }
 }
