@@ -1,16 +1,13 @@
 ﻿using NHibernate;
 using NHibernate.Criterion;
-using NHibernate.Engine;
 using NHibernate.Transform;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Borigran.OneData.Platform.NHibernate.Repository
@@ -26,61 +23,32 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
 
         protected abstract ISessionFactory SessionFactory { get; }
 
-        /// <summary>
-        /// Creates a <see cref="DetachedCriteria"/> compatible with this Repository
-        /// </summary>
-        /// <returns>The <see cref="DetachedCriteria"/></returns>
         public DetachedCriteria CreateDetachedCriteria()
         {
             return DetachedCriteria.For<T>();
         }
 
-
-        /// <summary>
-        /// Creates an aliases <see cref="DetachedCriteria"/> compatible with this Repository
-        /// </summary>
-        /// <param name="alias">the alias</param>
-        /// <returns>The <see cref="DetachedCriteria"/></returns>
         public DetachedCriteria CreateDetachedCriteria(string alias)
         {
             return DetachedCriteria.For<T>(alias);
         }
 
-        /// <summary>
-        /// Loads all the entities that match the criteria
-        /// </summary>
-        /// <param name="criteria">the criteria to look for</param>
-        /// <returns>All the entities that match the criteria</returns>
         public async Task<ICollection<T>> FindAllAsync(params ICriterion[] criteria)
         {
             return await FindAllAsync(NullOrderArray, criteria);
         }
 
-        /// <summary>
-        /// Loads all the entities that match the criteria
-        /// by order
-        /// </summary>
-        /// <param name="order">the order in which to bring the data</param>
-        /// <param name="criteria">the criteria to look for</param>
-        /// <returns>All the entities that match the criteria</returns>
         public async Task<ICollection<T>> FindAllAsync(Order order, params ICriterion[] criteria)
         {
             return await FindAllAsync(new Order[] { order }, criteria);
         }
 
-        /// <summary>
-        /// Loads all the entities that match the criteria
-        /// by order
-        /// </summary>
-        /// <param name="orders">the order in which to bring the data</param>
-        /// <param name="criteria">the criteria to look for</param>
-        /// <returns>All the entities that match the criteria</returns>
         public async Task<ICollection<T>> FindAllAsync(Order[] orders, params ICriterion[] criteria)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
                 ICriteria crit = RepositoryHelper<T>.CreateCriteriaFromArray(action.Value, criteria, orders);
-                return crit.List<T>();
+                return await crit.ListAsync<T>();
             }
         }
 
@@ -88,7 +56,6 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         {
             return await FindAllAsync(ResultSetOptions.None, criteria);
         }
-
         public async Task<ICollection<T>> FindAllAsync(ResultSetOptions options, params DetachedCriteria[] criteria)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
@@ -96,7 +63,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
                 IMultiCriteria crit = RepositoryHelper<T>.GetExecutableMultiCriteria(action.Value, criteria);
                 IEnumerable<T> result = new List<T>();
                 bool first = true;
-                foreach (IList resultItem in crit.List())
+                foreach (IList resultItem in await crit.ListAsync())
                 {
                     IEnumerable<T> mappedResultItem = resultItem.Cast<T>();
 
@@ -121,19 +88,12 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
             }
         }
 
-        /// <summary>
-        /// Loads all the entities that match the criteria
-        /// by order
-        /// </summary>
-        /// <param name="criteria">the criteria to look for</param>
-        /// <param name="orders"> the order to load the entities</param>
-        /// <returns>All the entities that match the criteria</returns>
         public async Task<ICollection<T>> FindAllAsync(DetachedCriteria criteria, params Order[] orders)
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
                 ICriteria crit = RepositoryHelper<T>.GetExecutableCriteria(action.Value, criteria, orders);
-                return crit.List<T>();
+                return await crit.ListAsync<T>();
             }
         }
 
@@ -153,7 +113,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
                 ICriteria crit = RepositoryHelper<T>.GetExecutableCriteria(action.Value, criteria, orders);
                 crit.SetFirstResult(firstResult)
                     .SetMaxResults(maxResults);
-                return crit.List<T>();
+                return await crit.ListAsync<T>();
             }
         }
 
@@ -179,7 +139,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
                         criteria.SetFirstResult(pagingInfo.FirstResult).SetMaxResults(pagingInfo.MaxResults)
                         });
 
-                return DoMultiCriteriaPaging<T>(crit, pagingInfo);
+                return await DoMultiCriteriaPaging<T>(crit, pagingInfo);
             }
         }
 
@@ -251,7 +211,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
                 ICriteria crit = RepositoryHelper<T>.CreateCriteriaFromArray(action.Value, criteria, selectionOrder);
                 crit.SetFirstResult(firstResult)
                     .SetMaxResults(numberOfResults);
-                return crit.List<T>();
+                return await crit.ListAsync<T>();
             }
         }
 
@@ -275,7 +235,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
                        countCriteria.SetProjection(Projections.RowCount()),
                         criteria.SetFirstResult(pagingInfo.FirstResult).SetMaxResults(pagingInfo.MaxResults)});
 
-                return DoMultiCriteriaPaging<T>(crit, pagingInfo);
+                return await DoMultiCriteriaPaging<T>(crit, pagingInfo);
             }
         }
 
@@ -290,7 +250,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
             {
                 IQuery query = RepositoryHelper<T>.CreateQuery(action.Value, namedQuery, parameters);
-                return query.List<T>();
+                return await query.ListAsync<T>();
             }
         }
 
@@ -450,23 +410,6 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
 
             return await CountAsync(detached) != 0;
         }
-
-        private static ICollection<TColItem> DoMultiCriteriaPaging<TColItem>(IMultiCriteria criteria, PagingInfo pagingInfo)
-        {
-            IList results = (IList)criteria.List();
-
-            PaginatedList<TColItem> returnList = new PaginatedList<TColItem>();
-
-            foreach (var t in (IList)results[1])
-                returnList.Add((TColItem)t);
-
-            pagingInfo.Total = (int)((IList)results[0])[0];
-
-            returnList.SetPagingInfo(pagingInfo);
-
-            return returnList;
-        }
-
         private static ICollection<TProj> DoReportAll<TProj>(ICriteria criteria, ProjectionList projectionList, IResultTransformer resultTransformer)
         {
             BuildProjectionCriteria<TProj>(criteria, projectionList, true, resultTransformer);
@@ -499,22 +442,6 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
 
             return criteria;
         }
-
-        private static DetachedCriteria BuildProjectionCriteria<TProj>(DetachedCriteria criteria, IProjection projectionList, bool distinctResults)
-        {
-            if (distinctResults)
-                criteria.SetProjection(Projections.Distinct(projectionList));
-            else
-                criteria.SetProjection(projectionList);
-
-            if (typeof(TProj) != typeof(object[]))
-            //we are not returning a tuple, so we need the result transformer
-            {
-                criteria.SetResultTransformer(new TypedResultTransformer<TProj>());
-            }
-
-            return criteria;
-        }
         public IQueryOver<T> QueryOver()
         {
             using (DisposableAction<ISession> action = ActionToBePerformedOnSessionUsedForDBFetches)
@@ -539,22 +466,23 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
             }
         }
 
-    }
-
-
-    public class StoredProcedureResultMapper
-    {
-        public static T2 Map<T2>(IDataReader dataReader)
+        private async Task<ICollection<TColItem>> DoMultiCriteriaPaging<TColItem>(IMultiCriteria criteria, PagingInfo pagingInfo)
         {
-            var fields = new object[dataReader.FieldCount];
-            for (var i = 0; i < dataReader.FieldCount; i++)
-                fields[i] = dataReader[i] == DBNull.Value ? null : dataReader[i];
+            IList results = await criteria.ListAsync();
 
-            return (T2)Activator.CreateInstance(typeof(T2), fields);
+            PaginatedList<TColItem> returnList = new PaginatedList<TColItem>();
+
+            foreach (var t in (IList)results[1])
+                returnList.Add((TColItem)t);
+
+            pagingInfo.Total = (int)((IList)results[0])[0];
+
+            returnList.SetPagingInfo(pagingInfo);
+
+            return returnList;
         }
+
     }
-
-
 }
 
 
