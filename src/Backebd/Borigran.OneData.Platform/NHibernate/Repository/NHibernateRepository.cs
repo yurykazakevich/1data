@@ -1,6 +1,4 @@
 ﻿using NHibernate;
-using System;
-using System.Collections;
 using System.Threading.Tasks;
 
 namespace Borigran.OneData.Platform.NHibernate.Repository
@@ -14,7 +12,8 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
             get { return session; }
         }
 
-        protected override DisposableAction<ISession> ActionToBePerformedOnSessionUsedForDBFetches => throw new NotImplementedException();
+        protected override DisposableAction<ISession> ActionToBePerformedOnSessionUsedForDBFetches =>
+            new(delegate { }, Session);
 
         protected override ISessionFactory SessionFactory
         {

@@ -16,6 +16,10 @@ namespace Borigran.OneData.Platform
             try
             {
                 invocation.Proceed();
+                if (state == null)
+                {
+                    return;
+                }
 
                 if (invocation.ReturnValue is Task)
                 {
@@ -55,11 +59,11 @@ namespace Borigran.OneData.Platform
                 await operation;
 #pragma warning restore VSTHRD003
 
-                OnSuccess(invocation, state);
+                OnSuccessAsync(invocation, state);
             }
             catch (Exception ex)
             {
-                OnFailure(invocation, ex, state);
+                OnFailureAsync(invocation, ex, state);
                 throw;
             }
         }
@@ -72,13 +76,13 @@ namespace Borigran.OneData.Platform
                 var result = await operation;
 #pragma warning restore VSTHRD003
 
-                OnSuccess(invocation, state);
+                OnSuccessAsync(invocation, state);
 
                 return result;
             }
             catch (Exception ex)
             {
-                OnFailure(invocation, ex, state);
+                OnFailureAsync(invocation, ex, state);
                 throw;
             }
         }

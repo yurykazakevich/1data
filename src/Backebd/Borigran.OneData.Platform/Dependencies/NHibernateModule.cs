@@ -38,19 +38,9 @@ namespace Borigran.OneData.Platform.Dependencies
                 .As(typeof(IRepository<>))
                 .InstancePerLifetimeScope();
 
-            foreach (Type transactionContainer in GetTransactionContainerTypes())
-            {
-                builder.RegisterType(transactionContainer)
-                    .EnableInterfaceInterceptors()
-                    .InterceptedBy(typeof(TransactionInterceptor))
-                    .SingleInstance();
-            }
-
             builder.RegisterType<TransactionInterceptor>()
                 .AsSelf()
-                .AsImplementedInterfaces()
-                .InstancePerDependency()
-                .Named<IInterceptor>(GlobalStrings.DbTransactionInterceptorName);
+                .InstancePerLifetimeScope();
 
             var cfg = BuildConfiguration();
 
@@ -70,7 +60,7 @@ namespace Borigran.OneData.Platform.Dependencies
             foreach (Assembly assembly in assemblyScanner.AssembliesToScan())
             {
                 types.AddRange(assembly.GetTypes()
-                    .Where(t => t.GetCustomAttribute<InterceptAttribute>() != null));
+                    .Where(t => t.GetCustomAttribute<TransactionContainerAttribute>() != null));
             }
 
             return types.ToArray(); ;

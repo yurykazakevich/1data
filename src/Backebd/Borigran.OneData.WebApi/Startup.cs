@@ -23,6 +23,8 @@ namespace Borigran.OneData.WebApi
     {
         private AuthOptions authOptions;
 
+        private readonly AssemblyScanner assemblyScanner = new AssemblyScanner();
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,6 +39,7 @@ namespace Borigran.OneData.WebApi
         {
             authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
 
+            services.AddAutoMapper(assemblyScanner.AssembliesToScan());
             services.AddControllers();
             services.AddOneDataSwaggerGen();
             services.AddOneDataAuthentication(authOptions);

@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Borigran.OneData.Authorization.Domain.Entities;
 using Borigran.OneData.Platform.Encryption;
+using Borigran.OneData.Authorization.Dto;
 
 namespace Borigran.OneData.Authorization.Impl
 {
@@ -46,13 +47,9 @@ namespace Borigran.OneData.Authorization.Impl
 
             return encriptedCode;
         }
-        public async Task<User> FindUserAsync(string phoneNumber)
-        {
-            return await userRepository.FindOneAsync(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
-        }
 
         [Transaction]
-        public async Task<User> RegisterOrLoginAsync(string phoneNumber, string verificationCode, int userProvidedCode)
+        public async Task<AuthTokenDto> RegisterOrLoginAsync(string phoneNumber, string verificationCode, string userProvidedCode)
         {
             if (!ValdateCode(verificationCode, userProvidedCode))
             {
@@ -72,7 +69,12 @@ namespace Borigran.OneData.Authorization.Impl
             UpdateRefreshToken(user);
 
             await userRepository.SaveOrUpdateAsync(user);
-            return user;
+
+            return new AuthTokenDto
+            {
+                Token = GenerateAccessTokenForUser(user),
+                RefreshToken = user.RefreshToken
+            };
         }
 
         [Transaction]
@@ -89,25 +91,8 @@ namespace Borigran.OneData.Authorization.Impl
             }
         }
 
-        public string GenerateAccessToken(IEnumerable<Claim> claims)
-        {
-            var signinCredentials = AuthOptions.GetSymmetricSecurityKey();
-
-            var tokeOptions = new JwtSecurityToken(
-                    issuer: authOptions.Issuer,
-                    audience: authOptions.Audience,
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(authOptions.AutheTokenExpired),
-                    signingCredentials:
-                        new SigningCredentials(signinCredentials, SecurityAlgorithms.HmacSha256)
-            );
-
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-            return tokenString;
-        }
-
         [Transaction]
-        public async Task<string> RefreshExpiredTokenAsync(string expiredToken, string refreshToken, string phoneNumber)
+        public async Task<AuthTokenDto> RefreshExpiredTokenAsync(string expiredToken, string refreshToken, string phoneNumber)
         {
             var principal = GetPrincipalFromExpiredToken(expiredToken);
             if (principal.Identity != null && principal.Identity.Name != phoneNumber)
@@ -131,7 +116,11 @@ namespace Borigran.OneData.Authorization.Impl
 
             await userRepository.UpdateAsync(user);
 
-            return user.RefreshToken;
+            return new AuthTokenDto
+            {
+                Token = GenerateAccessTokenForUser(user),
+                RefreshToken = user.RefreshToken
+            };
         }
         private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
         {
@@ -170,10 +159,42 @@ namespace Borigran.OneData.Authorization.Impl
             }
         }
 
-        private bool ValdateCode(string verificationCode, int userProvidedCode)
+        private bool ValdateCode(string verificationCode, string userProvidedCode)
         {
-            return encryptor.ValidateHash(verificationCode, userProvidedCode.ToString());
+            return encryptor.ValidateHash(verificationCode, userProvidedCode);
         }
 
+        private async Task<User> FindUserAsync(string phoneNumber)
+        {
+            return await userRepository.FindOneAsync(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
+        }
+
+        private string GenerateAccessTokenForUser(User user)
+        {
+            var claims = new Claim[]
+            {
+                new Claim(ClaimTypes.Name, user.PhoneNumber),
+                new Claim(ClaimTypes.SerialNumber, user.Id.ToString())
+            };
+
+            return GenerateAccessToken(claims);
+
+        }
+        private string GenerateAccessToken(IEnumerable<Claim> claims)
+        {
+            var signinCredentials = AuthOptions.GetSymmetricSecurityKey();
+
+            var tokeOptions = new JwtSecurityToken(
+                    issuer: authOptions.Issuer,
+                    audience: authOptions.Audience,
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(authOptions.AutheTokenExpired),
+                    signingCredentials:
+                        new SigningCredentials(signinCredentials, SecurityAlgorithms.HmacSha256)
+            );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+            return tokenString;
+        }
     }
 }

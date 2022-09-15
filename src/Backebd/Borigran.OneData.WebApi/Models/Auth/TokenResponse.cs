@@ -1,4 +1,4 @@
-﻿namespace Borigran.OneData.WebApi.Models.Developer
+﻿namespace Borigran.OneData.WebApi.Models.Auth
 {
     public class TokenResponse
     {
