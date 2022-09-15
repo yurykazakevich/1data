@@ -12,25 +12,25 @@ using Borigran.OneData.Authorization.Dto;
 
 namespace Borigran.OneData.Authorization.Impl
 {
-    public class AuthService : IAuthService, ITransactionContainer
+    public class AuthService : IAuthService
     {
         private readonly IRepository<User> userRepository;
-
+        private readonly ISmsSender smsSender;
+        private readonly ITokenGenerator tokenGenerator;
+        private readonly IHashEncryptor encryptor;
         private readonly AuthOptions authOptions;
 
-        private readonly ISmsSender smsSender;
-
-        private readonly IHashEncryptor encryptor;
-
         public AuthService(IRepository<User> userRepository, 
-            AuthOptions authOptions, 
+            ITokenGenerator tokenGenerator, 
             ISmsSender smsSender,
-            IHashEncryptor encryptor)
+            IHashEncryptor encryptor,
+            AuthOptions authOptions)
         {
             this.userRepository = userRepository;
-            this.authOptions = authOptions;
+            this.tokenGenerator = tokenGenerator;
             this.smsSender = smsSender;
             this.encryptor = encryptor;
+            this.authOptions = authOptions;
         }
 
         public async Task<string> GetVerificationCodeAsync(string phoneNumber)
@@ -72,7 +72,7 @@ namespace Borigran.OneData.Authorization.Impl
 
             return new AuthTokenDto
             {
-                Token = GenerateAccessTokenForUser(user),
+                Token = tokenGenerator.GenerateAccessTokenForUser(user),
                 RefreshToken = user.RefreshToken
             };
         }
@@ -94,7 +94,7 @@ namespace Borigran.OneData.Authorization.Impl
         [Transaction]
         public async Task<AuthTokenDto> RefreshExpiredTokenAsync(string expiredToken, string refreshToken, string phoneNumber)
         {
-            var principal = GetPrincipalFromExpiredToken(expiredToken);
+            var principal = tokenGenerator.GetPrincipalFromToken(expiredToken, true);
             if (principal.Identity != null && principal.Identity.Name != phoneNumber)
             {
                 throw new SecurityTokenException("Invalid user");
@@ -118,29 +118,9 @@ namespace Borigran.OneData.Authorization.Impl
 
             return new AuthTokenDto
             {
-                Token = GenerateAccessTokenForUser(user),
+                Token = tokenGenerator.GenerateAccessTokenForUser(user),
                 RefreshToken = user.RefreshToken
             };
-        }
-        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-        {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateAudience = false, //you might want to validate the audience and issuer depending on your use case
-                ValidateIssuer = false,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345")),
-                ValidateLifetime = false //here we are saying that we don't care about the token's expiration date
-            };
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            SecurityToken securityToken;
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid token");
-
-            return principal;
         }
 
         private void UpdateRefreshToken(User user)
@@ -167,34 +147,6 @@ namespace Borigran.OneData.Authorization.Impl
         private async Task<User> FindUserAsync(string phoneNumber)
         {
             return await userRepository.FindOneAsync(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
-        }
-
-        private string GenerateAccessTokenForUser(User user)
-        {
-            var claims = new Claim[]
-            {
-                new Claim(ClaimTypes.Name, user.PhoneNumber),
-                new Claim(ClaimTypes.SerialNumber, user.Id.ToString())
-            };
-
-            return GenerateAccessToken(claims);
-
-        }
-        private string GenerateAccessToken(IEnumerable<Claim> claims)
-        {
-            var signinCredentials = AuthOptions.GetSymmetricSecurityKey();
-
-            var tokeOptions = new JwtSecurityToken(
-                    issuer: authOptions.Issuer,
-                    audience: authOptions.Audience,
-                    claims: claims,
-                    expires: DateTime.Now.AddMinutes(authOptions.AutheTokenExpired),
-                    signingCredentials:
-                        new SigningCredentials(signinCredentials, SecurityAlgorithms.HmacSha256)
-            );
-
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
-            return tokenString;
         }
     }
 }

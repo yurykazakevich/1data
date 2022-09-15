@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects", "Projects", "{6B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Borigran.OneData.WebApi", "Borigran.OneData.WebApi\Borigran.OneData.WebApi.csproj", "{6A918015-CCC7-4A57-B53C-51D067ABCC2C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Borigran.OneData.Authorization.Tests", "Borigran.OneData.Authorization.Tests\Borigran.OneData.Authorization.Tests.csproj", "{B0CDA600-B911-49B4-B2A9-F6FE277B5F4A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{6A918015-CCC7-4A57-B53C-51D067ABCC2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6A918015-CCC7-4A57-B53C-51D067ABCC2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6A918015-CCC7-4A57-B53C-51D067ABCC2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0CDA600-B911-49B4-B2A9-F6FE277B5F4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0CDA600-B911-49B4-B2A9-F6FE277B5F4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0CDA600-B911-49B4-B2A9-F6FE277B5F4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0CDA600-B911-49B4-B2A9-F6FE277B5F4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{3A109806-8DBF-4239-BEBA-17DA8710A49F} = {6B46D8A7-6CB2-4ADB-B94C-776631FB1321}
 		{A0BFEF2B-8536-40D2-95C3-316BB95A8276} = {A3DEF863-595D-47B7-B710-758637C92D5D}
 		{6A918015-CCC7-4A57-B53C-51D067ABCC2C} = {6B46D8A7-6CB2-4ADB-B94C-776631FB1321}
+		{B0CDA600-B911-49B4-B2A9-F6FE277B5F4A} = {A3DEF863-595D-47B7-B710-758637C92D5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B71BDE6B-EEDF-4232-970A-305F73662FE7}

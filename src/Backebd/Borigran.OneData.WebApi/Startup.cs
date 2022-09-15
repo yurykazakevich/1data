@@ -2,6 +2,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Borigran.OneData.Authorization;
 using Borigran.OneData.Authorization.Dependencies;
+using Borigran.OneData.Authorization.Impl;
 using Borigran.OneData.Platform.Dependencies;
 using Borigran.OneData.WebApi.AppExtensions;
 using Borigran.OneData.WebApi.Pipeline;
@@ -38,11 +39,10 @@ namespace Borigran.OneData.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
-
             services.AddAutoMapper(assemblyScanner.AssembliesToScan());
             services.AddControllers();
             services.AddOneDataSwaggerGen();
-            services.AddOneDataAuthentication(authOptions);
+            services.AddOneDataAuthentication(JwtTokenGenerator.TokenValidationParameters(authOptions));
         }
 
         public void ConfigureContainer(ContainerBuilder builder)

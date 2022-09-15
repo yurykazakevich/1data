@@ -20,13 +20,14 @@ namespace Borigran.OneData.Authorization.Dependencies
                 .As<ISmsSender>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<JwtTokenGenerator>()
+                .As<ITokenGenerator>()
+                .InstancePerLifetimeScope();
+
             builder.RegisterType<AuthService>()
                 .As<IAuthService>()
                 .EnableTransactionInterceptor()
-                .InstancePerLifetimeScope();
-
-            //builder.RegisterType<AuthService>()
-                
+                .InstancePerLifetimeScope();                
         }
     }
 }

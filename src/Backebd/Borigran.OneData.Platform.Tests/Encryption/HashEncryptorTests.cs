@@ -1,5 +1,4 @@
 using Borigran.OneData.Platform.Encryption;
-using FluentAssertions;
 
 namespace Borigran.OneData.Platform.Tests.Encryption
 {
@@ -22,7 +21,7 @@ namespace Borigran.OneData.Platform.Tests.Encryption
             string hash = sut.GetHash(code);
             bool result = sut.ValidateHash(hash, code);
 
-            result.Should().BeTrue();
+            Assert.IsTrue(result);
         }
 
         [Test]
@@ -34,7 +33,7 @@ namespace Borigran.OneData.Platform.Tests.Encryption
             code--;
             bool result = sut.ValidateHash(hash, code.ToString());
 
-            result.Should().BeFalse();
+            Assert.IsFalse(result);
         }
 
         [Test]
@@ -45,7 +44,7 @@ namespace Borigran.OneData.Platform.Tests.Encryption
             string hash = sut.GetHash(data);
             bool result = sut.ValidateHash(hash, data);
 
-            result.Should().BeTrue();
+            Assert.IsTrue(result);
         }
     }
 }

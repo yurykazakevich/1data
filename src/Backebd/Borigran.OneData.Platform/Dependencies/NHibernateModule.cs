@@ -52,20 +52,6 @@ namespace Borigran.OneData.Platform.Dependencies
             RegisterConponents(builder, cfg, sessionFactory);
         }
 
-
-        private Type[] GetTransactionContainerTypes()
-        {
-            var types = new List<Type>();
-
-            foreach (Assembly assembly in assemblyScanner.AssembliesToScan())
-            {
-                types.AddRange(assembly.GetTypes()
-                    .Where(t => t.GetCustomAttribute<TransactionContainerAttribute>() != null));
-            }
-
-            return types.ToArray(); ;
-        }
-
         public Configuration BuildConfiguration()
         {
             var config = Fluently.Configure()
