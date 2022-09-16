@@ -5,18 +5,19 @@ using Borigran.OneData.Authorization.Dependencies;
 using Borigran.OneData.Authorization.Impl;
 using Borigran.OneData.Platform.Dependencies;
 using Borigran.OneData.WebApi.AppExtensions;
-using Borigran.OneData.WebApi.Pipeline;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Borigran.OneData.WebApi.Pipeline.ExceptionHandling;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using System;
+using System.Linq;
+using System.Reflection;
+using AssemblyScanner = Borigran.OneData.Platform.Dependencies.AssemblyScanner;
 
 namespace Borigran.OneData.WebApi
 {
@@ -43,6 +44,9 @@ namespace Borigran.OneData.WebApi
             services.AddControllers();
             services.AddOneDataSwaggerGen();
             services.AddOneDataAuthentication(JwtTokenGenerator.TokenValidationParameters(authOptions));
+
+            //services.AddFluentValidationAutoValidation();
+            //services.AddValidatorsFromAssembly(Assembly.GetCallingAssembly());
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -52,13 +56,25 @@ namespace Borigran.OneData.WebApi
             // for you.
             builder.RegisterModule(new OneDataAutofacModule(Configuration));
             builder.RegisterModule(new AuthorithationModule(authOptions));
+
+            builder.RegisterAssemblyTypes(this.GetType().Assembly)
+                .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
+                .AsImplementedInterfaces().InstancePerDependency();
+
+            builder.RegisterAssemblyTypes(this.GetType().Assembly)
+                .Where(t => t.IsClosedTypeOf(typeof(IExceptionHandler<>)))
+                .AsImplementedInterfaces().InstancePerDependency();
+            
+            builder.RegisterType<ExceptionHandlerFactory>()
+                .As<IExceptionHandlerFactory>()
+                .InstancePerLifetimeScope();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddLog4Net();
-            app.UseMiddleware<ErrorHandlingMiddleWare>();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
 
