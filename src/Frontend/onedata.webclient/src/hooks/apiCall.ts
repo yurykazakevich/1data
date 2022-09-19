@@ -1,7 +1,13 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { LoaderContext } from '../context/LoaderContext'
 
-enum ApiMethods {
+interface IApiCallResponse<TResponse> {
+    response: TResponse,
+    apiError: string
+}
+
+export enum ApiMethods {
     GET,
     POST,
     PUT,
@@ -9,24 +15,29 @@ enum ApiMethods {
     DELETE
 }
 
-export function useApiCall<TResponse>(url: string, method: ApiMethods, data: any) {
+export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods) {
 
     const [response, setResponse] = useState<TResponse>()
     const [apiError, setApiError] = useState('')
+    const { showLoader, hideLoader } = useContext(LoaderContext)
 
     function buildApiUrl(relativeUrl: string): string {
-        //TODO: Add building from config
-        return relativeUrl;
+        var baseApiUrl = process.env.REACT_APP_API_URL
+        if (!baseApiUrl?.endsWith('/')) {
+            baseApiUrl += '/'
+        }
+
+        return baseApiUrl + relativeUrl;
     }
 
-    async function makeRequest(url: string, method: ApiMethods, data: any, setLoading: (visible: boolean) => {}) {
+    async function makeRequest(data: TRequest): Promise<IApiCallResponse<TResponse>> {
 
         var axiosResponse: AxiosResponse<TResponse, any>
         const apiUrl = buildApiUrl(url)
 
         try {
             setApiError('')
-            setLoading(true)
+            showLoader()
 
             switch (method) {
                 case ApiMethods.GET:
@@ -43,12 +54,13 @@ export function useApiCall<TResponse>(url: string, method: ApiMethods, data: any
             }
         } catch (e: unknown) {
             const error = e as AxiosError
-            setLoading(false)
             setApiError(error.message)
         } finally {
-            setLoading(false)
+            hideLoader()
         }
+
+        return { response, apiError } as IApiCallResponse<TResponse>
     }
 
-    return { response, apiError, makeRequest }
+    return { makeRequest }
 }
