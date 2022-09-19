@@ -24,7 +24,7 @@ export function ProductsPage() {
         const response = (await sendSmsCall.makeRequest(request))
     }
 
-    const changeHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
         setValue(event.target.value)
     }
 
@@ -40,7 +40,7 @@ export function ProductsPage() {
 
             {error && <ValidationError error={error} />}
 
-            <button type="submit" className="py-2 px-4 border bg-yellow-400 hover:text-white">Create</button>
+            <button type="submit" className="py-2 px-4 border bg-yellow-400 hover:text-white">Отправить</button>
         </form>
     )
 }

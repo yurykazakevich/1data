@@ -1,9 +1,9 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
-import { useState, useContext } from 'react'
+import { useRef, useContext } from 'react'
 import { LoaderContext } from '../context/LoaderContext'
 
 interface IApiCallResponse<TResponse> {
-    response: TResponse,
+    response: TResponse | any,
     apiError: string
 }
 
@@ -17,8 +17,6 @@ export enum ApiMethods {
 
 export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods) {
 
-    const [response, setResponse] = useState<TResponse>()
-    const [apiError, setApiError] = useState('')
     const { showLoader, hideLoader } = useContext(LoaderContext)
 
     function buildApiUrl(relativeUrl: string): string {
@@ -32,21 +30,21 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
 
     async function makeRequest(data: TRequest): Promise<IApiCallResponse<TResponse>> {
 
+       var response: IApiCallResponse<TResponse> = { apiError: '', response: null}
         var axiosResponse: AxiosResponse<TResponse, any>
         const apiUrl = buildApiUrl(url)
 
         try {
-            setApiError('')
             showLoader()
 
             switch (method) {
                 case ApiMethods.GET:
                     axiosResponse = await axios.get<TResponse>(apiUrl)
-                    setResponse(axiosResponse.data)
+                    response.response = axiosResponse.data as TResponse
                     break
                 case ApiMethods.POST:
                     axiosResponse = await axios.post<TResponse>(apiUrl, data)
-                    setResponse(axiosResponse.data)
+                    response.response = axiosResponse.data as TResponse
                     break
                 default:
                     var methodStr: string = ApiMethods[method];
@@ -54,12 +52,12 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
             }
         } catch (e: unknown) {
             const error = e as AxiosError
-            setApiError(error.message)
+            response.apiError = error.message
         } finally {
             hideLoader()
         }
 
-        return { response, apiError } as IApiCallResponse<TResponse>
+        return response
     }
 
     return { makeRequest }
