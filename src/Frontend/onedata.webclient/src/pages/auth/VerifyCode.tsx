@@ -1,14 +1,23 @@
-﻿import React, { useState, useContext } from 'react'
+﻿import React, { useState, useEffect, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ValidationError } from '../../components/ValidationError'
 import { ILoginReuest, ITokenResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
+import { IValidationErrorResponse } from '../../models/ErrorModels'
 
 export function VerifyCode() {
     const [value, setValue] = useState('')
     const [error, setError] = useState('')
     const sendSmsCall = useApiCall<ILoginReuest, ITokenResponse>("auth/login", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (preLoginContext.phoneNumber.length === 0) {
+            navigate("/auth/phone")
+        }
+    }, [])
 
     const submitHandler = async (event: React.FormEvent) => {
         event.preventDefault()
@@ -30,7 +39,31 @@ export function VerifyCode() {
         const response = (await sendSmsCall.makeRequest(request))
 
         if (response.response !== null) {
+            preLoginContext.phoneNumber = ''
+            preLoginContext.verificationCode = ''
 
+            //TODO:Setup Logged context
+
+            navigate('/')
+        }
+        else {
+            const validatioErrors = response.apiError as IValidationErrorResponse
+            if (validatioErrors !== null) {
+                var isFormField: boolean = false
+                for (var i = 0; i < validatioErrors.errors.length; i++) {
+                    if (validatioErrors.errors[i].propertyName === 'userProvidedCode') {
+                        isFormField = true
+                        setError(validatioErrors.errors[i].message)
+                    }
+                }
+
+                if (!isFormField) {
+                    alert("Ошибка валидации на сервере")
+                }
+            }
+            else {
+                alert(response.apiError)
+            }
         }
     }
 

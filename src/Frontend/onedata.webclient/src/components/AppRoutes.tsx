@@ -1,4 +1,5 @@
 ﻿import { Route, Routes } from 'react-router-dom'
+import App from '../App';
 import { Auth } from '../pages/auth/Auth'
 import { EnterPhone } from '../pages/auth/EnterPhone'
 import { VerifyCode } from '../pages/auth/VerifyCode'

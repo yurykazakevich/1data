@@ -2,7 +2,7 @@
 import { PreLoginContext } from '../../context/PreLoginContext';
 
 export function Auth() {
-    const phoneNumber: string = '12345'
+    const phoneNumber: string = ''
     const verificationCode: string = ''
 
     return (
