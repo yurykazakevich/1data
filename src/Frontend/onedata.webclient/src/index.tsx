@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { LoaderState } from './context/LoaderContext';
 import { BrowserRouter } from 'react-router-dom'
+import { ModalState } from './context/ModalContext';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -15,7 +16,7 @@ root.render(
     <React.StrictMode>
         <LoaderState />
         <BrowserRouter>
-            <App />
+                <App />
         </BrowserRouter>
     </React.StrictMode>
 );

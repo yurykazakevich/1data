@@ -8,7 +8,7 @@ import { PreLoginContext } from '../../context/PreLoginContext'
 export function EnterPhone() {
     const [value, setValue] = useState('')
     const [error, setError] = useState('')
-    const sendSmsCall = useApiCall<IPhoneNumberRequest, IVerificationCodeResponse>("auth/sendsms", ApiMethods.POST)
+    const sendSmsCall = useApiCall<IPhoneNumberRequest, IVerificationCodeResponse>("auth/sendsmscode", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
     const navigate = useNavigate()
 
@@ -32,12 +32,13 @@ export function EnterPhone() {
             phoneNumber: value
         }
 
-        //const response = (await sendSmsCall.makeRequest(request))
-        //if (response.response !== null) {
+        const response = (await sendSmsCall.makeRequest(request))
+        if (response.response !== null) {
             preLoginContext.phoneNumber = value
-        //    preLoginContext.verificationCode= response.response.code
-        //}
-        navigate('/auth/code')
+            preLoginContext.verificationCode= response.response.code
+
+            navigate('/auth/code')
+        }
     }
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {

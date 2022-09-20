@@ -1,6 +1,7 @@
-﻿import axios, { AxiosError, AxiosResponse } from 'axios'
+﻿import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { useContext } from 'react'
 import { LoaderContext } from '../context/LoaderContext'
+import { ModalContext } from '../context/ModalContext'
 
 interface IApiCallResponse<TResponse> {
     response: TResponse | null,
@@ -18,6 +19,7 @@ export enum ApiMethods {
 export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods) {
 
     const { showLoader, hideLoader } = useContext(LoaderContext)
+    const { modal, open, close } = useContext(ModalContext)
 
     function buildApiUrl(relativeUrl: string): string {
         var baseApiUrl = process.env.REACT_APP_API_URL
@@ -30,9 +32,15 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
 
     async function makeRequest(data: TRequest): Promise<IApiCallResponse<TResponse>> {
 
-       var response: IApiCallResponse<TResponse> = { apiError: '', response: null}
+        var response: IApiCallResponse<TResponse> = { apiError: '', response: null}
         var axiosResponse: AxiosResponse<TResponse, any>
         const apiUrl = buildApiUrl(url)
+        var requestConfig: AxiosRequestConfig = {
+            headers: {
+                'Content-Type': 'application/json',
+                mode: 'cors'
+            }
+        }
 
         try {
             showLoader()
@@ -43,7 +51,7 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
                     response.response = axiosResponse.data as TResponse
                     break
                 case ApiMethods.POST:
-                    axiosResponse = await axios.post<TResponse>(apiUrl, data)
+                    axiosResponse = await axios.post<TResponse>(apiUrl, data, requestConfig)
                     response.response = axiosResponse.data as TResponse
                     break
                 default:

@@ -42,9 +42,29 @@ namespace Borigran.OneData.WebApi
         {
             authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
             services.AddAutoMapper(assemblyScanner.AssembliesToScan());
+            services.AddCors(options =>
+            {
+                string[] allowedHosts = Configuration.GetValue<string>("ClientUrls")
+                    .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+                options.AddPolicy(CorsPolicyNames.ClientApp, builder => builder
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .WithOrigins(allowedHosts));
+
+                options.AddPolicy(CorsPolicyNames.ExternalEndPoint, builder => builder
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyOrigin());
+
+                options.DefaultPolicyName = CorsPolicyNames.ClientApp;
+
+            });
             services.AddControllers();
             services.AddOneDataSwaggerGen();
             services.AddOneDataAuthentication(JwtTokenGenerator.TokenValidationParameters(authOptions));
+
+            services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
 
             //services.AddFluentValidationAutoValidation();
             //services.AddValidatorsFromAssembly(Assembly.GetCallingAssembly());
@@ -74,10 +94,17 @@ namespace Borigran.OneData.WebApi
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseCors();
+            app.Use((context, next) =>
+            {
+                context.Items["__CorsMiddlewareInvoked"] = true;
+                return next();
+            });
+
             loggerFactory.AddLog4Net();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+            AutofacContainer = app.ApplicationServices.GetAutofacRoot();
 
             if (env.IsDevelopment())
             {

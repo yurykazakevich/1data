@@ -39,6 +39,7 @@ namespace Borigran.OneData.WebApi.Pipeline.ExceptionHandling.Handlers
                 }
 
                 errorMessageBuilder.AppendLine(exception.StackTrace);
+                errorResponse.Error = errorMessageBuilder.ToString();
             }
             else
             {
