@@ -7,7 +7,7 @@ namespace Borigran.OneData.WebApi.Models.Auth
     public class PhoneNumberPropertyValidator<TRequest> : PropertyValidator<TRequest, string>
         where TRequest : PhoneNumberRequest
     {
-        public readonly Regex PhoneNumberRegex = new Regex(@"^\+\d{1-3}\({0-1}\d{3}\){0-1}\d{7}");
+        public readonly Regex PhoneNumberRegex = new Regex(@"^\+\d{1,3}\({0,1}\d{2,3}\){0,1}\d{7}$");
         public override string Name => "PhoneNumberPropertyValidator";
 
         public override bool IsValid(ValidationContext<TRequest> context, string value)

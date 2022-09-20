@@ -4,6 +4,7 @@ import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ValidationError } from '../../components/ValidationError'
 import { IPhoneNumberRequest, IVerificationCodeResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
+import { IValidationErrorResponse } from '../../models/ErrorModels'
 
 export function EnterPhone() {
     const [value, setValue] = useState('')
@@ -23,7 +24,8 @@ export function EnterPhone() {
         event.preventDefault()
         setError('')
 
-        if (value.trim().length === 0) {
+        const phoneRegExp = new RegExp('^\\+\\d{1,3}\\({0,1}\\d{2,3}\\){0,1}\\d{7}$')
+        if (value.trim().length === 0 || !phoneRegExp.test(value)) {
             setError('Введите номер телефона в формате +375(xx)xxxxxxx.')
             return
         }
@@ -35,9 +37,18 @@ export function EnterPhone() {
         const response = (await sendSmsCall.makeRequest(request))
         if (response.response !== null) {
             preLoginContext.phoneNumber = value
-            preLoginContext.verificationCode= response.response.code
+            preLoginContext.verificationCode = response.response.code
 
             navigate('/auth/code')
+        }
+        else {
+            const validatioErrors = response.apiError as IValidationErrorResponse
+            if (validatioErrors !== null) {
+                setError(validatioErrors.errors[0].message)
+            }
+            else {
+                alert(response.apiError)
+            }
         }
     }
 

@@ -43,7 +43,7 @@ namespace Borigran.OneData.WebApi.Pipeline.ExceptionHandling.Handlers
             }
             else
             {
-                errorResponse.Error = "Internal server error.";
+                errorResponse.Error = "Внутренняя ошибка сервера.";
             }
 
             await response.WriteAsJsonAsync(errorResponse);

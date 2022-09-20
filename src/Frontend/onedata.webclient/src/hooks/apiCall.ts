@@ -2,10 +2,11 @@
 import { useContext } from 'react'
 import { LoaderContext } from '../context/LoaderContext'
 import { ModalContext } from '../context/ModalContext'
+import { IValidationErrorResponse } from '../models/ErrorModels'
 
 interface IApiCallResponse<TResponse> {
     response: TResponse | null,
-    apiError: string
+    apiError: any
 }
 
 export enum ApiMethods {
@@ -35,12 +36,12 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
         var response: IApiCallResponse<TResponse> = { apiError: '', response: null}
         var axiosResponse: AxiosResponse<TResponse, any>
         const apiUrl = buildApiUrl(url)
-        var requestConfig: AxiosRequestConfig = {
+        /*var requestConfig: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
                 mode: 'cors'
             }
-        }
+        }*/
 
         try {
             showLoader()
@@ -51,7 +52,7 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
                     response.response = axiosResponse.data as TResponse
                     break
                 case ApiMethods.POST:
-                    axiosResponse = await axios.post<TResponse>(apiUrl, data, requestConfig)
+                    axiosResponse = await axios.post<TResponse>(apiUrl, data)
                     response.response = axiosResponse.data as TResponse
                     break
                 default:
@@ -60,7 +61,14 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
             }
         } catch (e: unknown) {
             const error = e as AxiosError
-            response.apiError = error.message
+            console.error(error.message)
+            if (error.code === 'ERR_BAD_REQUEST'
+                && (error.response?.data as IValidationErrorResponse) !== null) {
+                response.apiError = error.response?.data
+            }
+            else {
+                response.apiError = error.message
+            }
         } finally {
             hideLoader()
         }
