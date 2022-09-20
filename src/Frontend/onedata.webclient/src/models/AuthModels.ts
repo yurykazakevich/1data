@@ -1,4 +1,4 @@
-export interface IPhoneNumberRequest {
+﻿export interface IPhoneNumberRequest {
     phoneNumber: string
 }
 

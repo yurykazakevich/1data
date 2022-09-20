@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Borigran.OneData.WebApi.Models.ErrorResponses;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Borigran.OneData.WebApi.Pipeline.ExceptionHandling.Handlers
@@ -20,25 +22,30 @@ namespace Borigran.OneData.WebApi.Pipeline.ExceptionHandling.Handlers
             response.StatusCode = StatusCodes.Status500InternalServerError;
             response.ContentType = "text/plain; charset=utf-8";
 
+            var errorResponse = new DefaultErrorResponse
+            {
+                Code = response.StatusCode
+            };
+
             if (environment.IsDevelopment())
             {
-                await response.WriteAsync(Environment.NewLine);
-                await response.WriteAsync($"{exception.GetType().FullName}: {exception.Message}");
+                var errorMessageBuilder = new StringBuilder();
+                errorMessageBuilder.AppendLine($"{exception.GetType().FullName}: {exception.Message}");
                 Exception inner = exception.InnerException;
                 while (inner != null)
                 {
-                    await response.WriteAsync(Environment.NewLine);
-                    await response.WriteAsync($"Inner Exception: {inner.GetType().FullName}: {inner.Message}");
+                    errorMessageBuilder.AppendLine($"Inner Exception: {inner.GetType().FullName}: {inner.Message}");
                     inner = inner.InnerException;
                 }
 
-                await response.WriteAsync(Environment.NewLine);
-                await response.WriteAsync(exception.StackTrace);
+                errorMessageBuilder.AppendLine(exception.StackTrace);
             }
             else
             {
-                await response.WriteAsync("Internal server error.");
+                errorResponse.Error = "Internal server error.";
             }
+
+            await response.WriteAsJsonAsync(errorResponse);
         }
     }
 }

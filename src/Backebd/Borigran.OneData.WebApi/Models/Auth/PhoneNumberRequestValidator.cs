@@ -6,9 +6,7 @@ namespace Borigran.OneData.WebApi.Models.Auth
     {
         public PhoneNumberRequestValidator()
         {
-            RuleFor(x => x.PhoneNumber)
-                .NotEmpty()
-                .Matches(@"^\+(\d){11-12}");
+            RuleFor(x => x.PhoneNumber).SetValidator(new PhoneNumberPropertyValidator<PhoneNumberRequest>());
         }
     }
 }
