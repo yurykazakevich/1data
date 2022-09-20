@@ -20,7 +20,7 @@ export enum ApiMethods {
 export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods) {
 
     const { showLoader, hideLoader } = useContext(LoaderContext)
-    const { modal, open, close } = useContext(ModalContext)
+    //const { modal, open, close } = useContext(ModalContext)
 
     function buildApiUrl(relativeUrl: string): string {
         var baseApiUrl = process.env.REACT_APP_API_URL

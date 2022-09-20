@@ -10,7 +10,7 @@ export const LoaderContext = createContext<ILoaderContext>({
     hideLoader: () => { }
 })
 
-export const LoaderState = () => {
+export const LoaderState = ({ children }: { children: React.ReactNode }) => {
     const [visible, setVisible] = useState(false)
 
     const showLoader = () => setVisible(true)
@@ -25,6 +25,7 @@ export const LoaderState = () => {
                     <p className="text-center">Загрузка...</p>
                 </div>
             </>}
+            { children }
         </LoaderContext.Provider>
     )
 }
