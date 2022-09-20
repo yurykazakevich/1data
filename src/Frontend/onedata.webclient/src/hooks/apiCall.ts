@@ -1,9 +1,9 @@
-import axios, { AxiosError, AxiosResponse } from 'axios'
-import { useRef, useContext } from 'react'
+﻿import axios, { AxiosError, AxiosResponse } from 'axios'
+import { useContext } from 'react'
 import { LoaderContext } from '../context/LoaderContext'
 
 interface IApiCallResponse<TResponse> {
-    response: TResponse | any,
+    response: TResponse | null,
     apiError: string
 }
 

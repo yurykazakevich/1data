@@ -1,5 +1,4 @@
-import React, { createContext, useState } from 'react'
-
+п»їimport React, { createContext, useState } from 'react'
 
 interface ILoaderContext {
     showLoader: () => void
@@ -23,7 +22,7 @@ export const LoaderState = () => {
             {visible && <>
                 <div className="fixed bg-black/50 top-0 right-0 left-0 bottom-0" />
                 <div className="w-[500px] p-5 rounded bg-white absolute top-10 left-1/2 -translate-x-1/2">
-                    <p className="text-center">Загрузка...</p>
+                    <p className="text-center">Р—Р°РіСЂСѓР·РєР°...</p>
                 </div>
             </>}
         </LoaderContext.Provider>
