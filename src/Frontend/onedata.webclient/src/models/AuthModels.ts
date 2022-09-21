@@ -14,4 +14,14 @@ export interface ILoginReuest extends IPhoneNumberRequest {
 export interface ITokenResponse {
     token: string
     refreshToken: string
+    tokenExpired: number,
+    tokenCreated: Date,
+    userId: number,
+    phoneNumber: string
+}
+
+export interface IRefreshTokenRequest {
+    phoneNumber: string
+    expiredToken: string
+    refreshToken: string
 }

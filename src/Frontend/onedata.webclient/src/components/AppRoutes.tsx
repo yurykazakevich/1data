@@ -8,6 +8,7 @@ export function AppRoutes() {
   return (
         <>
           <Routes>
+              <Route path="/" element={<h2>конструктор</h2>} />
               <Route path="/auth" element={<Auth />}>
                   <Route index element={<EnterPhone />} />
                   <Route path="phone" element={<EnterPhone />} />

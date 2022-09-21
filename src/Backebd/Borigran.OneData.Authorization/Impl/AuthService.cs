@@ -1,14 +1,12 @@
 ﻿using Borigran.OneData.Platform.NHibernate.Repository;
 using Borigran.OneData.Platform.NHibernate.Transactions;
 using NHibernate.Criterion;
-using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Borigran.OneData.Authorization.Domain.Entities;
 using Borigran.OneData.Platform.Encryption;
 using Borigran.OneData.Authorization.Dto;
+using Borigran.OneData.Platform.Helpers;
 
 namespace Borigran.OneData.Authorization.Impl
 {
@@ -19,18 +17,21 @@ namespace Borigran.OneData.Authorization.Impl
         private readonly ITokenGenerator tokenGenerator;
         private readonly IHashEncryptor encryptor;
         private readonly AuthOptions authOptions;
+        private readonly IPhoneNumberHelper phoneNumberHelper;
 
         public AuthService(IRepository<User> userRepository, 
             ITokenGenerator tokenGenerator, 
             ISmsSender smsSender,
             IHashEncryptor encryptor,
-            AuthOptions authOptions)
+            AuthOptions authOptions,
+            IPhoneNumberHelper phoneNumberHelper)
         {
             this.userRepository = userRepository;
             this.tokenGenerator = tokenGenerator;
             this.smsSender = smsSender;
             this.encryptor = encryptor;
             this.authOptions = authOptions;
+            this.phoneNumberHelper = phoneNumberHelper;
         }
 
         public async Task<string> GetVerificationCodeAsync(string phoneNumber)
@@ -51,30 +52,23 @@ namespace Borigran.OneData.Authorization.Impl
         [Transaction]
         public async Task<AuthTokenDto> RegisterOrLoginAsync(string phoneNumber, string verificationCode, string userProvidedCode)
         {
+            string cleanedPhoneNumber = phoneNumberHelper.ClearPhoneNumber(phoneNumber);
+
             if (!ValdateCode(verificationCode, userProvidedCode))
             {
                 throw new SecurityTokenException("Invalidverification code");
             }
 
-            var user = await FindUserAsync(phoneNumber);
+            var user = await FindUserAsync(cleanedPhoneNumber);
 
             if (user == null)
             {
                 user = new User
                 {
-                    PhoneNumber = phoneNumber,
+                    PhoneNumber = phoneNumberHelper.ClearPhoneNumber(cleanedPhoneNumber),
                 };
             }
-
-            UpdateRefreshToken(user);
-
-            await userRepository.SaveOrUpdateAsync(user);
-
-            return new AuthTokenDto
-            {
-                Token = tokenGenerator.GenerateAccessTokenForUser(user),
-                RefreshToken = user.RefreshToken
-            };
+            return await GenerateTokensForUser(user);
         }
 
         [Transaction]
@@ -112,21 +106,32 @@ namespace Borigran.OneData.Authorization.Impl
                 throw new SecurityTokenException("Invalid token");
             }
 
-            UpdateRefreshToken(user);
+            return await GenerateTokensForUser(user);
+        }
+
+        private async Task<AuthTokenDto> GenerateTokensForUser(User user)
+        {
+            DateTime tokenGeneratedTime = DateTime.UtcNow;
+            SetRefreshTokenForUser(user, tokenGeneratedTime);
 
             await userRepository.UpdateAsync(user);
 
             return new AuthTokenDto
             {
-                Token = tokenGenerator.GenerateAccessTokenForUser(user),
-                RefreshToken = user.RefreshToken
+                Token = tokenGenerator.GenerateAccessTokenForUser(user, tokenGeneratedTime),
+                RefreshToken = user.RefreshToken,
+                TokenCreated = tokenGeneratedTime,
+                TokenExpired = authOptions.AuthTokenExpired,
+                UserId = user.Id,
+                PhoneNumber = user.PhoneNumber
             };
         }
 
-        private void UpdateRefreshToken(User user)
+        private void SetRefreshTokenForUser(User user, DateTime now)
         {
             user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpired = DateTime.Now.AddMinutes(authOptions.RefreshTokenExpired);
+            user.RefreshTokenExpired = now.ToLocalTime()
+                .AddMinutes(authOptions.RefreshTokenExpired);
         }
 
         private string GenerateRefreshToken()

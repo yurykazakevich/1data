@@ -1,14 +1,20 @@
-﻿using FluentValidation;
+﻿using Borigran.OneData.Platform.Helpers;
+using FluentValidation;
 using FluentValidation.Validators;
-using System.Text.RegularExpressions;
 
 namespace Borigran.OneData.WebApi.Models.Auth
 {
     public class PhoneNumberPropertyValidator<TRequest> : PropertyValidator<TRequest, string>
         where TRequest : PhoneNumberRequest
     {
-        public readonly Regex PhoneNumberRegex = new Regex(@"^\+\d{1,3}\({0,1}\d{2,3}\){0,1}\d{7}$");
+        public readonly IPhoneNumberHelper phoneNumberHelper;
+        
         public override string Name => "PhoneNumberPropertyValidator";
+
+        public PhoneNumberPropertyValidator(IPhoneNumberHelper phoneNumberHelper)
+        {
+            this.phoneNumberHelper = phoneNumberHelper;
+        }
 
         public override bool IsValid(ValidationContext<TRequest> context, string value)
         {
@@ -17,7 +23,7 @@ namespace Borigran.OneData.WebApi.Models.Auth
                 context.MessageFormatter.AppendArgument("Issue", "должно быть заполнено");
                 return false;
             }
-            else if(!PhoneNumberRegex.IsMatch(value))
+            else if(!phoneNumberHelper.ValidatePhoneNumber(value))
             {
                 context.MessageFormatter.AppendArgument("Issue", "имеет неверный формат");
                 return false;

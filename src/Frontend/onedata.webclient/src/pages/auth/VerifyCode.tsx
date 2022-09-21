@@ -4,6 +4,7 @@ import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ValidationError } from '../../components/ValidationError'
 import { ILoginReuest, ITokenResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
+import { IJwtContext, JwtContext } from '../../context/JwtContext'
 import { IValidationErrorResponse } from '../../models/ErrorModels'
 
 export function VerifyCode() {
@@ -12,6 +13,8 @@ export function VerifyCode() {
     const sendSmsCall = useApiCall<ILoginReuest, ITokenResponse>("auth/login", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
     const navigate = useNavigate()
+    const jwtContext: IJwtContext = useContext(JwtContext)
+
 
     useEffect(() => {
         if (preLoginContext.phoneNumber.length === 0) {
@@ -36,13 +39,15 @@ export function VerifyCode() {
             verificationCode: preLoginContext.verificationCode
         }
 
-        const response = (await sendSmsCall.makeRequest(request))
+        const response = (await sendSmsCall.makeRequest(request, false))
 
         if (response.response !== null) {
+            const jwtResponse = response.response
+
+            jwtContext.setFromResponse(jwtContext.data, jwtResponse)
+
             preLoginContext.phoneNumber = ''
             preLoginContext.verificationCode = ''
-
-            //TODO:Setup Logged context
 
             navigate('/')
         }
