@@ -2,7 +2,6 @@
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace Borigran.OneData.Authorization.Impl
 {
@@ -51,7 +50,7 @@ namespace Borigran.OneData.Authorization.Impl
             return principal;
         }
 
-        public string GenerateAccessTokenForUser(User user)
+        public string GenerateAccessTokenForUser(User user, DateTime now)
         {
             var claims = new Claim[]
              {
@@ -59,10 +58,10 @@ namespace Borigran.OneData.Authorization.Impl
                 new Claim(ClaimTypes.SerialNumber, user.Id.ToString())
              };
 
-            return GenerateAccessToken(claims);
+            return GenerateAccessToken(claims, now);
         }
 
-        private string GenerateAccessToken(IEnumerable<Claim> claims)
+        private string GenerateAccessToken(IEnumerable<Claim> claims, DateTime now)
         {
             var signinCredentials = AuthOptions.GetSymmetricSecurityKey();
 
@@ -70,12 +69,13 @@ namespace Borigran.OneData.Authorization.Impl
                     issuer: authOptions.Issuer,
                     audience: authOptions.Audience,
                     claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(authOptions.AuthTokenExpired),
+                    expires: now.AddMinutes(authOptions.AuthTokenExpired),
                     signingCredentials:
                         new SigningCredentials(signinCredentials, SecurityAlgorithms.HmacSha256)
             );
 
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+
             return tokenString;
         }
     }

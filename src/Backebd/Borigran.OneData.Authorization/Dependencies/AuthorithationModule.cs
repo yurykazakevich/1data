@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Borigran.OneData.Authorization.Impl;
 using Borigran.OneData.Platform.Dependencies;
+using Borigran.OneData.Platform.Helpers;
 
 namespace Borigran.OneData.Authorization.Dependencies
 {
@@ -27,7 +28,11 @@ namespace Borigran.OneData.Authorization.Dependencies
             builder.RegisterType<AuthService>()
                 .As<IAuthService>()
                 .EnableTransactionInterceptor()
-                .InstancePerLifetimeScope();                
+                .InstancePerLifetimeScope();     
+            
+            builder.RegisterType<PhoneNumberHelper>()
+                .As<IPhoneNumberHelper>()
+                .InstancePerDependency();
         }
     }
 }
