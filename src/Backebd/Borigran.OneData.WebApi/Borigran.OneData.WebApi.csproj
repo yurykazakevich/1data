@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -23,6 +23,17 @@
   <ItemGroup>
     <ProjectReference Include="..\Borigran.OneData.Authorization\Borigran.OneData.Authorization.csproj" />
     <ProjectReference Include="..\Borigran.OneData.Platform\Borigran.OneData.Platform.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Images\2_Double\Left\" />
+    <Folder Include="wwwroot\Images\2_Double\Center\" />
+    <Folder Include="wwwroot\Images\2_Double\Right\" />
+    <Folder Include="wwwroot\Images\1_Single\" />
+    <Folder Include="wwwroot\Images\3_Triple\Center\" />
+    <Folder Include="wwwroot\Images\3_Triple\Left\" />
+    <Folder Include="wwwroot\Images\3_Triple\Right\" />
+    <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 
 </Project>
