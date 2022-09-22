@@ -89,6 +89,7 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
             }
         }
     }
+
     function isLoggedIn(): IErrorResponse  | null {
         if (jwtContext.isAuthorized(jwtContext.data)) {
             console.debug("Попытка выполнить запрос " + url + " без авторизации")
@@ -104,8 +105,6 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
             return null
         }
     }
-
-
 
     async function makeRequest(data: TRequest, authorize: boolean = true): Promise<IApiCallResponse<TResponse>> {
 

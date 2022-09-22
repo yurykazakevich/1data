@@ -1,24 +1,24 @@
 ﻿import React, { useState, useEffect, useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ValidationError } from '../../components/ValidationError'
 import { ILoginReuest, ITokenResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
 import { IJwtContext, JwtContext } from '../../context/JwtContext'
 import { IValidationErrorResponse } from '../../models/ErrorModels'
+import { useRedirect } from '../../hooks/useRedirect'
 
 export function VerifyCode() {
     const [value, setValue] = useState('')
     const [error, setError] = useState('')
     const sendSmsCall = useApiCall<ILoginReuest, ITokenResponse>("auth/login", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
-    const navigate = useNavigate()
+    const redirect = useRedirect()
     const jwtContext: IJwtContext = useContext(JwtContext)
 
 
     useEffect(() => {
         if (preLoginContext.phoneNumber.length === 0) {
-            navigate("/auth/phone")
+            redirect.redirectToLogin()
         }
     }, [])
 
@@ -49,7 +49,7 @@ export function VerifyCode() {
             preLoginContext.phoneNumber = ''
             preLoginContext.verificationCode = ''
 
-            navigate('/')
+            redirect.redirectToHome()
         }
         else {
             const validatioErrors = response.apiError as IValidationErrorResponse

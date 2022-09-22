@@ -62,7 +62,7 @@ export const JwtState = ({ children }: { children: React.ReactNode }) => {
         data.userId = 0
         data.phoneNumber = ''
     }
-    const setFromResponse = (data: IJwtContextData, jwtResponse: ITokenResponse) {
+    const setFromResponse = (data: IJwtContextData, jwtResponse: ITokenResponse) => {
         data.jwtToken = jwtResponse.token
         data.jwtTokenExpired = jwtResponse.tokenExpired
         data.refreshToken = jwtResponse.refreshToken

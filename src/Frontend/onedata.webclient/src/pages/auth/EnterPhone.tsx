@@ -1,21 +1,25 @@
 ﻿import React, { useState, useContext, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useRedirect } from '../../hooks/useRedirect'
 import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ValidationError } from '../../components/ValidationError'
 import { IPhoneNumberRequest, IVerificationCodeResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
+import { IJwtContext, JwtContext } from '../../context/JwtContext'
 import { IValidationErrorResponse } from '../../models/ErrorModels'
 
 export function EnterPhone() {
-    const [value, setValue] = useState('')
+    const [phoneNumberValue, setphoneNumberValue] = useState('')
     const [error, setError] = useState('')
     const sendSmsCall = useApiCall<IPhoneNumberRequest, IVerificationCodeResponse>("auth/sendsmscode", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
-    const navigate = useNavigate()
+    const redirect = useRedirect()
+    const jwtContext: IJwtContext = useContext(JwtContext)
 
     useEffect(() => {
         if (preLoginContext.phoneNumber.length > 0) {
-            setValue(preLoginContext.phoneNumber)
+            setphoneNumberValue(preLoginContext.phoneNumber)
+        } else if (jwtContext.data?.phoneNumber.length > 0) {
+            setphoneNumberValue(preLoginContext.phoneNumber)
         }
     }, [])
     
@@ -25,21 +29,21 @@ export function EnterPhone() {
         setError('')
 
         const phoneRegExp = new RegExp('^\\+\\d{1,3}\\({0,1}\\d{2,3}\\){0,1}\\d{7}$')
-        if (value.trim().length === 0 || !phoneRegExp.test(value)) {
+        if (phoneNumberValue.trim().length === 0 || !phoneRegExp.test(phoneNumberValue)) {
             setError('Введите номер телефона в формате +375(xx)xxxxxxx.')
             return
         }
 
         const request: IPhoneNumberRequest = {
-            phoneNumber: value
+            phoneNumber: phoneNumberValue
         }
 
         const response = (await sendSmsCall.makeRequest(request))
         if (response.response !== null) {
-            preLoginContext.phoneNumber = value
+            preLoginContext.phoneNumber = phoneNumberValue
             preLoginContext.verificationCode = response.response.code
 
-            navigate('/auth/code')
+            redirect.redirectToPage('/auth/code')
         }
         else {
             const validatioErrors = response.apiError as IValidationErrorResponse
@@ -53,7 +57,7 @@ export function EnterPhone() {
     }
 
     const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(event.target.value)
+        setphoneNumberValue(event.target.value)
     }
 
     return (
@@ -63,7 +67,7 @@ export function EnterPhone() {
                 type="text"
                 className="border py-2 px-4 mb-2 w-full outline-0"
                 placeholder="+375(xx)xxxxxxx"
-                value={value}
+                value={phoneNumberValue}
                 onChange={changeHandler}
             />
 
