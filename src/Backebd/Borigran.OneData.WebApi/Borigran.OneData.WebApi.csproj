@@ -26,14 +26,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Images\2_Double\Left\" />
-    <Folder Include="wwwroot\Images\2_Double\Center\" />
-    <Folder Include="wwwroot\Images\2_Double\Right\" />
-    <Folder Include="wwwroot\Images\1_Single\" />
-    <Folder Include="wwwroot\Images\3_Triple\Center\" />
-    <Folder Include="wwwroot\Images\3_Triple\Left\" />
-    <Folder Include="wwwroot\Images\3_Triple\Right\" />
-    <Folder Include="wwwroot\Images\" />
+    <Folder Include="StaticResources\CItemImages\Area\Fill\" />
+    <Folder Include="StaticResources\CItemImages\Area\EndGroove\" />
+    <Folder Include="StaticResources\CItemImages\Area\FillWithWindow\" />
+    <Folder Include="StaticResources\CItemImages\Area\Tile\" />
+    <Folder Include="StaticResources\CItemImages\Garden\" />
+    <Folder Include="StaticResources\CItemImages\Boder\" />
+    <Folder Include="StaticResources\CItemImages\Bench\" />
+    <Folder Include="StaticResources\CItemImages\Lampada\" />
+    <Folder Include="StaticResources\CItemImages\Vase\" />
+    <Folder Include="StaticResources\CItemImages\Tip\" />
+    <Folder Include="StaticResources\CItemImages\NewFolder\" />
+    <Folder Include="StaticResources\CItemImages\Tombstone\" />
+    <Folder Include="StaticResources\CItemImages\Stella\" />
+    <Folder Include="StaticResources\CItemImages\Pedestal\" />
   </ItemGroup>
 
 </Project>

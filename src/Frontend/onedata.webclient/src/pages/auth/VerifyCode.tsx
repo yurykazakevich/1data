@@ -36,7 +36,8 @@ export function VerifyCode() {
         const request: ILoginReuest = {
             phoneNumber: preLoginContext.phoneNumber,
             userProvidedCode: value,
-            verificationCode: preLoginContext.verificationCode
+            verificationCode: preLoginContext.verificationCode,
+            isPhisical: true //TODO Request this value from UI
         }
 
         const response = (await sendSmsCall.makeRequest(request, false))

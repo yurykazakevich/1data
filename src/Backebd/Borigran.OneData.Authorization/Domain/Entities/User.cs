@@ -6,7 +6,7 @@ namespace Borigran.OneData.Authorization.Domain.Entities
     {
         public virtual string PhoneNumber { get; set; }
         public virtual string? RefreshToken { get; set; }
-
         public virtual DateTime? RefreshTokenExpired { get; set; }
+        public virtual bool IsPhisical { get; set; }
     }
 }

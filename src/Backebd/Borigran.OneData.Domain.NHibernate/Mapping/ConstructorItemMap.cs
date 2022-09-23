@@ -7,7 +7,8 @@ namespace Borigran.OneData.Domain.NHibernate.Mapping
         public ConstructorItemMap()
             :base()
         {
-            Map(x => x.Name).Not.Nullable();
+            Map(x => x.Name).Nullable();
+            Map(x => x.ImageName).Nullable();
             Map(x => x.Price).Not.Nullable();
             Map(x => x.ArticleNumber).Not.Nullable();
             Map(x => x.Material).Not.Nullable();
@@ -16,11 +17,8 @@ namespace Borigran.OneData.Domain.NHibernate.Mapping
             Map(x => x.Height).Not.Nullable();
             Map(x => x.Weight).Not.Nullable();
             Map(x => x.Varranty).Not.Nullable();
-
-            HasMany(x => x.Images)
-                .Cascade.Delete()
-                .Not.LazyLoad()
-                .ForeignKeyConstraintName("FK_ConstructorItem_Image");
+            Map(x => x.ItemType).Not.Nullable()
+                .CustomType<int>();
         }
     }
 }

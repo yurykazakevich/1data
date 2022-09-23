@@ -13,6 +13,7 @@ namespace Borigran.OneData.Authorization.Domain.NHibernate.Mapping
                 .UniqueKey($"{nameof(User.PhoneNumber)}_UK");
             Map(x => x.RefreshToken);
             Map(x => x.RefreshTokenExpired);
+            Map(x => x.IsPhisical).Not.Nullable();
         }
     }
 }

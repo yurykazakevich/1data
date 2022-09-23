@@ -9,6 +9,7 @@ export interface IVerificationCodeResponse {
 export interface ILoginReuest extends IPhoneNumberRequest {
     verificationCode: string
     userProvidedCode: string
+    isPhisical: boolean
 }
 
 export interface ITokenResponse {
@@ -20,8 +21,7 @@ export interface ITokenResponse {
     phoneNumber: string
 }
 
-export interface IRefreshTokenRequest {
-    phoneNumber: string
+export interface IRefreshTokenRequest extends IPhoneNumberRequest {
     expiredToken: string
     refreshToken: string
 }

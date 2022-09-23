@@ -11,13 +11,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Borigran.OneData.Domain.NHibernate.Mapping;
 using Configuration = NHibernate.Cfg.Configuration;
 using Module = Autofac.Module;
 using Environment = NHibernate.Cfg.Environment;
-using IInterceptor = Castle.DynamicProxy.IInterceptor;
 using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace Borigran.OneData.Platform.Dependencies
 {
@@ -99,7 +96,7 @@ namespace Borigran.OneData.Platform.Dependencies
             update.Execute(false, true);
 #endif
 
-            new SchemaExport(config).SetOutputFile(@"./Schema.sql").Create(true, true);
+            new SchemaExport(config).SetOutputFile(@"./Sql/Schema.sql").Create(true, false);
         }
     }
 }

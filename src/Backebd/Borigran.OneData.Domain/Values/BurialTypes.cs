@@ -1,8 +1,8 @@
 ﻿namespace Borigran.OneData.Domain.Values
 {
-    public enum CItemImageTypes
+    public enum BurialTypes
     {
-        Single = 1,
+        Single = 10,
         Double = 20,
         DoubleLeft = 21,
         DoubleCenter = 22,

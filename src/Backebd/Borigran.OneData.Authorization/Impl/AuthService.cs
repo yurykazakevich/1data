@@ -50,11 +50,11 @@ namespace Borigran.OneData.Authorization.Impl
         }
 
         [Transaction]
-        public async Task<AuthTokenDto> RegisterOrLoginAsync(string phoneNumber, string verificationCode, string userProvidedCode)
+        public async Task<AuthTokenDto> RegisterOrLoginAsync(LoginDto data)
         {
-            string cleanedPhoneNumber = phoneNumberHelper.ClearPhoneNumber(phoneNumber);
+            string cleanedPhoneNumber = phoneNumberHelper.ClearPhoneNumber(data.PhoneNumber);
 
-            if (!ValdateCode(verificationCode, userProvidedCode))
+            if (!ValdateCode(data.VerificationCode, data.UserProvidedCode))
             {
                 throw new SecurityTokenException("Invalidverification code");
             }
@@ -66,6 +66,7 @@ namespace Borigran.OneData.Authorization.Impl
                 user = new User
                 {
                     PhoneNumber = phoneNumberHelper.ClearPhoneNumber(cleanedPhoneNumber),
+                    IsPhisical = data.IsPhisical
                 };
             }
             return await GenerateTokensForUser(user);

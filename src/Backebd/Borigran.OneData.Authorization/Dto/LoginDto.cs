@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
-
-namespace Borigran.OneData.WebApi.Models.Auth
+﻿namespace Borigran.OneData.Authorization.Dto
 {
-    public class LoginRequest : PhoneNumberRequest
+    public class LoginDto
     {
+        public string PhoneNumber { get; set; }
         public string VerificationCode { get; set; }
         public string UserProvidedCode { get; set; }
         public bool IsPhisical { get; set; }

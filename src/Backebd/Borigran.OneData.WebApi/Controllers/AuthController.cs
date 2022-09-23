@@ -35,8 +35,9 @@ namespace Borigran.OneData.WebApi.Controllers
         [AllowAnonymous]
         public async Task<TokenResponse> Login([FromBody] LoginRequest request)
         {
-            AuthTokenDto authToken = await authService.RegisterOrLoginAsync(
-                request.PhoneNumber, request.VerificationCode, request.UserProvidedCode);
+            var loginData = mapper.Map<LoginDto>(request);
+
+            AuthTokenDto authToken = await authService.RegisterOrLoginAsync(loginData);
 
             return mapper.Map<TokenResponse>(authToken);
         }

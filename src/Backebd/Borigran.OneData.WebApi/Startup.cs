@@ -4,20 +4,21 @@ using Borigran.OneData.Authorization;
 using Borigran.OneData.Authorization.Dependencies;
 using Borigran.OneData.Authorization.Impl;
 using Borigran.OneData.Platform.Dependencies;
+using Borigran.OneData.Platform.Helpers;
 using Borigran.OneData.WebApi.AppExtensions;
+using Borigran.OneData.WebApi.Logic;
 using Borigran.OneData.WebApi.Pipeline.ExceptionHandling;
 using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.IO;
 using System.Linq;
-using System.Reflection;
 using AssemblyScanner = Borigran.OneData.Platform.Dependencies.AssemblyScanner;
 
 namespace Borigran.OneData.WebApi
@@ -62,7 +63,7 @@ namespace Borigran.OneData.WebApi
             });
             services.AddControllers();
             services.AddOneDataSwaggerGen();
-            services.AddOneDataAuthentication(JwtTokenGenerator.TokenValidationParameters(authOptions));
+            services.AddOneDataAuthorization(JwtTokenGenerator.TokenValidationParameters(authOptions));
 
             services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
 
@@ -89,6 +90,10 @@ namespace Borigran.OneData.WebApi
             builder.RegisterType<ExceptionHandlerFactory>()
                 .As<IExceptionHandlerFactory>()
                 .InstancePerLifetimeScope();
+
+            builder.RegisterType<CItemImageProvider>()
+                .As<ICItemImageProvider>()
+                .InstancePerDependency();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -116,9 +121,15 @@ namespace Borigran.OneData.WebApi
                 app.UseHsts();
             }
 
+            app.UseAuthorization();
             app.UseAuthentication();
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(env.ContentRootPath, "StaticResources")),
+                RequestPath = "/resources"
+            });
 
             app.UseRouting();
             app.UseAuthorization();
