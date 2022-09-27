@@ -4,7 +4,7 @@
     {
         Pedestal = 10,  // Тумба
         Garden = 20,    // Цветник
-        Stella = 30,    // Стелла
+        Stele = 30,    // Стелла
         Tombstone = 40, // Надгробие
         Boder = 50,     // Ограда
         Tip = 60,       // Наконечник
@@ -23,8 +23,8 @@
                     return "Тумба";
                 case CItemTypes.Garden:
                     return "Скамья";
-                case CItemTypes.Stella:
-                    return "Стелла";
+                case CItemTypes.Stele:
+                    return "Стела";
                 case CItemTypes.Tombstone:
                     return "Надгробие";
                 case CItemTypes.Boder:
@@ -48,7 +48,7 @@
             {
                 case CItemTypes.Pedestal:
                 case CItemTypes.Garden:
-                case CItemTypes.Stella:
+                case CItemTypes.Stele:
                 case CItemTypes.Tombstone:
                     return true;
             }

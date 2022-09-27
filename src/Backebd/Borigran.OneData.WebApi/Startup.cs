@@ -16,9 +16,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NHibernate.Linq.Functions;
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using AssemblyScanner = Borigran.OneData.Platform.Dependencies.AssemblyScanner;
 
 namespace Borigran.OneData.WebApi

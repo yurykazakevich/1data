@@ -25,5 +25,17 @@ namespace Borigran.OneData.Domain.Entities
         public virtual int Varranty { get; set; }
 
         public virtual CItemTypes ItemType { get; set; }
+
+        public virtual ConstructorItemCategory? Category { get; set; }
+
+        public virtual string AllowedBurialTypes { get; set; }
+
+        public virtual IEnumerable<ConstructorItemPosition> PossiblePositions { get; set; }
+
+        public ConstructorItem()
+        {
+            PossiblePositions = new List<ConstructorItemPosition>();
+        }
+
     }
 }

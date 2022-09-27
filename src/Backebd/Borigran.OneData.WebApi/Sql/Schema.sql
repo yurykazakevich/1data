@@ -1,15 +1,25 @@
 
-    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_Area_AreaAddon]') and parent_object_id = OBJECT_ID(N'TAreaAddons'))
-alter table TAreaAddons  drop constraint FK_Area_AreaAddon
+    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ConstructorItemCategory_ParentCategory]') and parent_object_id = OBJECT_ID(N'TConstructorItemCategorys'))
+alter table TConstructorItemCategorys  drop constraint FK_ConstructorItemCategory_ParentCategory
+
+
+    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ConstructorItem_Category]') and parent_object_id = OBJECT_ID(N'TConstructorItems'))
+alter table TConstructorItems  drop constraint FK_ConstructorItem_Category
+
+
+    if exists (select 1 from sys.objects where object_id = OBJECT_ID(N'[FK_ConstructorItem_Position]') and parent_object_id = OBJECT_ID(N'TConstructorItemPositions'))
+alter table TConstructorItemPositions  drop constraint FK_ConstructorItem_Position
 
 
     if exists (select * from dbo.sysobjects where id = object_id(N'TUsers') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TUsers
 
-    if exists (select * from dbo.sysobjects where id = object_id(N'TAreaAddons') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TAreaAddons
-
     if exists (select * from dbo.sysobjects where id = object_id(N'TAreas') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TAreas
 
+    if exists (select * from dbo.sysobjects where id = object_id(N'TConstructorItemCategorys') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TConstructorItemCategorys
+
     if exists (select * from dbo.sysobjects where id = object_id(N'TConstructorItems') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TConstructorItems
+
+    if exists (select * from dbo.sysobjects where id = object_id(N'TConstructorItemPositions') and OBJECTPROPERTY(id, N'IsUserTable') = 1) drop table TConstructorItemPositions
 
     create table TUsers (
         UserID INT IDENTITY NOT NULL,
@@ -21,14 +31,6 @@ alter table TAreaAddons  drop constraint FK_Area_AreaAddon
       unique (PhoneNumber)
     )
 
-    create table TAreaAddons (
-        AreaAddonID INT IDENTITY NOT NULL,
-       Name NVARCHAR(255) not null,
-       AddonType INT not null,
-       AreaId INT null,
-       primary key (AreaAddonID)
-    )
-
     create table TAreas (
         AreaID INT IDENTITY NOT NULL,
        Name NVARCHAR(255) not null,
@@ -38,27 +40,60 @@ alter table TAreaAddons  drop constraint FK_Area_AreaAddon
        primary key (AreaID)
     )
 
+    create table TConstructorItemCategorys (
+        ConstructorItemCategoryID INT IDENTITY NOT NULL,
+       Name NVARCHAR(255) not null,
+       ItemType INT not null,
+       SortOrder INT null,
+       ParentCategoryId INT null,
+       primary key (ConstructorItemCategoryID)
+    )
+
     create table TConstructorItems (
         ConstructorItemID INT IDENTITY NOT NULL,
-       Name NVARCHAR(255) null,
+       Name NVARCHAR(255) not null,
        ImageName NVARCHAR(255) null,
        Price DECIMAL(19,5) not null,
        ArticleNumber NVARCHAR(255) not null,
        Material NVARCHAR(255) not null,
        Length INT not null,
        Width INT not null,
-       Height INT not null,
+       Height INT null,
        Weight DECIMAL(19,5) not null,
        Varranty INT not null,
        ItemType INT not null,
+       CategoryId INT null,
+       AllowedBurialTypes NVARCHAR(255) null,
        primary key (ConstructorItemID)
+    )
+
+    create table TConstructorItemPositions (
+        ConstructorItemPositionID INT IDENTITY NOT NULL,
+       ImageName NVARCHAR(255) not null,
+       Position INT not null,
+       ConstructorItemId INT not null,
+       primary key (ConstructorItemPositionID)
     )
 
     create index PhoneNumber_IDX on TUsers (PhoneNumber)
 
-    create index IDX_AreaAddon_AreaId on TAreaAddons (AreaId)
+    create index IDX_ConstructorItemCategory_ParentCategoryId on TConstructorItemCategorys (ParentCategoryId)
 
-    alter table TAreaAddons 
-        add constraint FK_Area_AreaAddon 
-        foreign key (AreaId) 
-        references TAreas
+    alter table TConstructorItemCategorys 
+        add constraint FK_ConstructorItemCategory_ParentCategory 
+        foreign key (ParentCategoryId) 
+        references TConstructorItemCategorys
+
+    create index IDX_ConstructorItem_CategoryId on TConstructorItems (CategoryId)
+
+    alter table TConstructorItems 
+        add constraint FK_ConstructorItem_Category 
+        foreign key (CategoryId) 
+        references TConstructorItemCategorys
+
+    create index IDX_ConstructorItemPosition_ConstructorItemId on TConstructorItemPositions (ConstructorItemId)
+
+    alter table TConstructorItemPositions 
+        add constraint FK_ConstructorItem_Position 
+        foreign key (ConstructorItemId) 
+        references TConstructorItems
