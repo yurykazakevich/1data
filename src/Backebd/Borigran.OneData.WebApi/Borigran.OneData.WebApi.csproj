@@ -9,20 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="StaticResources\CItemImages\notfound.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="StaticResources\CItemImages\notfound.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="StaticResources\CItemImages\Single\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="StaticResources\CItemImages\Double\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="StaticResources\CItemImages\Triple\*.*">
+    <Content Include="StaticResources\CItemImages\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
