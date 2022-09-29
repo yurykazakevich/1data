@@ -16,11 +16,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using NHibernate.Linq.Functions;
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using AssemblyScanner = Borigran.OneData.Platform.Dependencies.AssemblyScanner;
 
 namespace Borigran.OneData.WebApi
@@ -94,7 +92,7 @@ namespace Borigran.OneData.WebApi
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<CItemImageProvider>()
-                .As<ICItemImageProvider>()
+                .As<ICItemImageProvider<Stream>>()
                 .InstancePerDependency();
         }
 
@@ -123,15 +121,14 @@ namespace Borigran.OneData.WebApi
                 app.UseHsts();
             }
 
-            app.UseAuthorization();
             app.UseAuthentication();
             app.UseHttpsRedirection();
-            app.UseStaticFiles(new StaticFileOptions
+            /*app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
                     Path.Combine(env.ContentRootPath, "StaticResources")),
                 RequestPath = "/resources"
-            });
+            });*/
 
             app.UseRouting();
             app.UseAuthorization();

@@ -59,20 +59,20 @@ function MonumentBuilder() {
               <Col sm={'auto'} className={'p-1'}>
                   <div className={'step-number-container text-center'}>
                       <Container>
-                          <Row>
-                                <Col className={getStepNumberClass(1) + ' py-1'}>1</Col>
+                            <Row className={'py-1' }>
+                                <Col className={getStepNumberClass(1)}>1</Col>
                           </Row>
-                          <Row>
-                                <Col className={getStepNumberClass(2) + ' py-1'}>2</Col>
+                            <Row className={'py-1'}>
+                                <Col className={getStepNumberClass(2)}>2</Col>
                           </Row>
-                          <Row>
-                                <Col className={getStepNumberClass(3) + ' py-1'}>3</Col>
+                            <Row className={'py-1'}>
+                                <Col className={getStepNumberClass(3)}>3</Col>
                           </Row>
-                          <Row>
-                                <Col className={getStepNumberClass(4) + ' py-1'}>4</Col>
+                            <Row className={'py-1'}>
+                                <Col className={getStepNumberClass(4)}>4</Col>
                           </Row>
-                          <Row>
-                                <Col className={getStepNumberClass(5) + ' py-1'}>5</Col>
+                            <Row className={'py-1'}>
+                                <Col className={getStepNumberClass(5)}>5</Col>
                           </Row>
                       </Container>
                   </div>

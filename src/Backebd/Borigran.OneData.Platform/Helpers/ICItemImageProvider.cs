@@ -1,9 +1,12 @@
 ﻿using Borigran.OneData.Domain.Values;
+using System.IO;
 
 namespace Borigran.OneData.Platform.Helpers
 {
-    public interface ICItemImageProvider
+    public interface ICItemImageProvider<TImageViewType>
     {
-        public string GetImageUrl(BurialTypes imageType, params object[] imageSearchParams);
+        public TImageViewType GetItemImage(BurialTypes burialType, int itemId);
+
+        public TImageViewType GetBacgroundImage(BurialTypes burialType);
     }
 }

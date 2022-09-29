@@ -36,15 +36,17 @@ namespace Borigran.OneData.Authorization.Impl
 
         public async Task<string> GetVerificationCodeAsync(string phoneNumber)
         {
+            string cleanedPhoneNumber = phoneNumberHelper.ClearPhoneNumber(phoneNumber);
+
             int code = new Random().Next(111111,999999);
 #if DEBUG
             code = 123456;
 #endif
-            var smsResponse = await smsSender.SendAuthCodeAsync(phoneNumber, code);
+            var smsResponse = await smsSender.SendAuthCodeAsync(cleanedPhoneNumber, code);
 
             //TODO: Add response validation
 
-            string encriptedCode = encryptor.GetHash(code.ToString());
+            string encriptedCode = encryptor.GetHash(SaltPhoneWithCode(phoneNumber, code.ToString()));
 
             return encriptedCode;
         }
@@ -54,7 +56,7 @@ namespace Borigran.OneData.Authorization.Impl
         {
             string cleanedPhoneNumber = phoneNumberHelper.ClearPhoneNumber(data.PhoneNumber);
 
-            if (!ValdateCode(data.VerificationCode, data.UserProvidedCode))
+            if (!ValdateCode(cleanedPhoneNumber, data.VerificationCode, data.UserProvidedCode))
             {
                 throw new SecurityTokenException("Invalidverification code");
             }
@@ -115,7 +117,7 @@ namespace Borigran.OneData.Authorization.Impl
             DateTime tokenGeneratedTime = DateTime.UtcNow;
             SetRefreshTokenForUser(user, tokenGeneratedTime);
 
-            await userRepository.UpdateAsync(user);
+            await userRepository.SaveOrUpdateAsync(user);
 
             return new AuthTokenDto
             {
@@ -145,14 +147,21 @@ namespace Borigran.OneData.Authorization.Impl
             }
         }
 
-        private bool ValdateCode(string verificationCode, string userProvidedCode)
+        private bool ValdateCode(string phoneNumber, string verificationCode, string userProvidedCode)
         {
-            return encryptor.ValidateHash(verificationCode, userProvidedCode);
+            return encryptor.ValidateHash(verificationCode, SaltPhoneWithCode(phoneNumber, userProvidedCode));
         }
 
         private async Task<User> FindUserAsync(string phoneNumber)
         {
             return await userRepository.FindOneAsync(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
+        }
+
+        private string SaltPhoneWithCode(string phoneNumber, string code)
+        {
+            const string salt = "Gfhjdjpbr";
+
+            return $"{phoneNumber}_{salt}_{code}";
         }
     }
 }

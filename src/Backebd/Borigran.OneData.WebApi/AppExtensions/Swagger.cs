@@ -41,7 +41,7 @@ namespace Borigran.OneData.WebApi.AppExtensions
             });
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Name = "Authirization",
+                Name = "Authorization",
                 Type = SecuritySchemeType.ApiKey,
                 Scheme = "Bearer",
                 BearerFormat = "JWT",

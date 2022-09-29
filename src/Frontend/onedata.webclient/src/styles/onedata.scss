@@ -1,0 +1,11 @@
+@import "~bootstrap/scss/bootstrap";
+@import "monumentBuilders.scss";
+
+body {
+}
+
+button.btn-block,
+input[type=button].btn-block {
+    width: 100%
+}
+

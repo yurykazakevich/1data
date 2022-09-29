@@ -1,0 +1,16 @@
+$stepNumberContainerWidth: 30px;
+
+.step-number-container
+{
+    width: $stepNumberContainerWidth;
+}
+
+.prev-step-number {
+    background-color: black;
+    color: white
+}
+
+.next-step-number {
+    background-color: white;
+    color: black
+}

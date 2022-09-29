@@ -48,6 +48,7 @@ namespace Borigran.OneData.WebApi.Controllers
             await authService.LogoutAsync(request.PhoneNumber);
         }
 
+        [AllowAnonymous]
         [HttpPatch("token/refresh")]
         public async Task<TokenResponse> RefreshToken([FromBody] RefreshTokenRequest request)
         {

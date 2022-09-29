@@ -1,64 +1,50 @@
 ﻿using Borigran.OneData.Domain.Values;
 using Borigran.OneData.Platform.Helpers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Borigran.OneData.WebApi.Logic
 {
-    public class CItemImageProvider : ICItemImageProvider, IDisposable
+    public class CItemImageProvider : ICItemImageProvider<Stream>
     {
-        public const string imageFileNameFormat = "{0}_{1}.png";
+        public const string BacgroundImageName = "Фон.png";
+        public const string NotFoundImageName = "notfound.png";
+        private const string CItemFolderPath = "StaticResources\\citemimages";
 
+        private readonly ILogger<CItemImageProvider> logger;
         private readonly string imageRootFolderPath;
-
-        private Stream imageStream;
-
-        public CItemImageProvider(IConfiguration appSettings)
+        public CItemImageProvider(ILogger<CItemImageProvider> logger)
         {
-            imageRootFolderPath = appSettings.GetValue<string>("CItemImageRootFolder");
+            this.logger = logger;
+            string rootFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            imageRootFolderPath = Path.Combine(rootFolder, CItemFolderPath);
         }
 
-        public void Dispose()
+        public Stream GetBacgroundImage(BurialTypes burialType)
         {
-            if (imageStream != null)
-            {
-                imageStream.Dispose();
-            }
+            string path = Path.Combine(imageRootFolderPath, burialType.ToString(), BacgroundImageName);
+
+            path = ValidateImageFilePath(path);
+            return File.OpenRead(path);
         }
 
-        public string GetImageUrl(BurialTypes imageType, params object[] imageSearchParams)
+        public Stream GetItemImage(BurialTypes burialType, int itemId)
         {
-            string itemName;
-            CItemTypes itemType;
-
-            ParseParameters(imageSearchParams, out itemName, out itemType);
-
-            string filePath = Path.Combine(imageRootFolderPath, itemType.ToString(),
-                string.Format(imageFileNameFormat, itemName, (int)imageType));
-
-            return filePath.Replace(Path.PathSeparator, '/');
+            throw new NotImplementedException();
         }
 
-        private void ParseParameters(object[] imageSearchParams, out string itemName, out CItemTypes itemType)
+        private string ValidateImageFilePath(string path)
         {
-            if (imageSearchParams.Length < 2)
+            if(!File.Exists(path))
             {
-                throw new ArgumentException("ItemName and ItemType were expected in imageSearchParams", nameof(imageSearchParams));
+                logger.LogWarning($"Image not found! {path}");
+                return Path.Combine(imageRootFolderPath, NotFoundImageName);
             }
 
-            itemName = imageSearchParams[0] as string;
-            if (string.IsNullOrEmpty(itemName))
-            {
-                throw new ArgumentException("String ItemName was expected in the first item of imageSearchParams", nameof(imageSearchParams));
-            }
-
-            if (!(imageSearchParams[1] is CItemTypes))
-            {
-                throw new ArgumentException("CItemTypes ItemType was expected in the second item of imageSearchParams", nameof(imageSearchParams));
-            }
-
-            itemType = (CItemTypes)imageSearchParams[1];
+            return path;
         }
     }
 }
