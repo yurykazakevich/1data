@@ -3,13 +3,13 @@ import App from '../App';
 import { Auth } from '../pages/auth/Auth'
 import { EnterPhone } from '../pages/auth/EnterPhone'
 import { VerifyCode } from '../pages/auth/VerifyCode'
-import Constructor from '../pages/Constructor';
+import MonumentBuilder from '../pages/MonumentBuilder';
 
 export function AppRoutes() {
   return (
         <>
           <Routes>
-              <Route path="/" element={<Constructor />} />
+              <Route path="/" element={<MonumentBuilder />} />
               <Route path="/auth" element={<Auth />}>
                   <Route index element={<EnterPhone />} />
                   <Route path="phone" element={<EnterPhone />} />

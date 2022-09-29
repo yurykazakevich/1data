@@ -5,3 +5,13 @@ body {
 .step-number-container {
     width: 30px;
 }
+
+.prev-step-number{
+    background-color: black;
+    color: white
+}
+
+.next-step-number {
+    background-color: white;
+    color: black
+}
