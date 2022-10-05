@@ -1,4 +1,5 @@
 ﻿import React, { createContext, useState } from 'react'
+import { Modal, Image } from 'react-bootstrap'
 
 interface ILoaderContext {
     showLoader: () => void
@@ -19,12 +20,14 @@ export const LoaderState = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <LoaderContext.Provider value={{ showLoader, hideLoader }}>
-            {visible && <>
-                <div className="fixed bg-black/50 top-0 right-0 left-0 bottom-0" />
-                <div className="w-[500px] p-5 rounded bg-white absolute top-10 left-1/2 -translate-x-1/2">
-                    <p className="text-center">Загрузка...</p>
-                </div>
-            </>}
+            <Modal show={visible} backdrop="static" keyboard={false} animation={false}
+                aria-labelledby="contained-modal-title-vcenter"
+                centered size="sm">
+                <Modal.Body className="text-center loading" style={{border:"none"}}>
+                    <Image src="/images/loading.gif" />
+                    <div className="py-2 loading-statement">Загрузка...</div>
+                </Modal.Body>
+            </Modal>
             { children }
         </LoaderContext.Provider>
     )
