@@ -11,6 +11,6 @@ namespace Borigran.OneData.WebApi.Models.ErrorResponses
 
     public class ValidationErrorResponse
     {
-        public IEnumerable<ValidationErrorResponseItem> Errors { get; set; }
+        public IEnumerable<ValidationErrorResponseItem> ValidatioErrors { get; set; }
     }
 }

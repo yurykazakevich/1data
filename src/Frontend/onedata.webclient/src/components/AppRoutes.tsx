@@ -9,12 +9,13 @@ export function AppRoutes() {
   return (
         <>
           <Routes>
-              <Route path="/" element={<MonumentBuilder />} />
+              <Route path="/" element={<h1>Главная</h1>} />
               <Route path="/auth" element={<Auth />}>
                   <Route index element={<EnterPhone />} />
                   <Route path="phone" element={<EnterPhone />} />
                   <Route path="code" element={<VerifyCode />} />
               </Route>
+              <Route path="/monumentbuilder" element={<MonumentBuilder />} />
               <Route path="*" element={<h2>Ресурс не найден</h2>} />
           </Routes>
       </>

@@ -16,10 +16,10 @@ namespace Borigran.OneData.WebApi.Controllers
             this.imageProvider = imageProvider;
         }
 
-        [HttpGet("bacground")]
+        [HttpGet("background")]
         public FileResult GetBacgroundImage(BurialTypes burialType)
         {
-            return File(imageProvider.GetBacgroundImage(burialType), "image/png");
+            return File(imageProvider.GetBacgroundImage(burialType), "image/jpg");
         }
     }
 }

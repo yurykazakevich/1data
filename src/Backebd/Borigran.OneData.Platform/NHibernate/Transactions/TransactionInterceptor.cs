@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace Borigran.OneData.Platform.NHibernate.Transactions
 {
-    [DebuggerStepThrough]
     public class TransactionInterceptor : BaseInterceptor<TransactionInterceptor.TransactionState>, ISynchronization
     {
         private IInvocation currentInvocation;
@@ -118,18 +117,17 @@ namespace Borigran.OneData.Platform.NHibernate.Transactions
 
             var methodName = invocation.Method.Name;
             var tx = state.Transaction;
-            logger.LogDebug("Committing transaction ({0})", methodName);
+            logger.LogDebug("Committing transaction async ({0})", methodName);
             try
             {
-                await tx.CommitAsync();
+                //tx.CommitAsync throws NullReference exception times to time
+                tx.Commit();
             }
             finally
             {
                 tx.Dispose();
             }
         }
-
-
 
         /// <summary>
         /// Called if the operation has failed with an exception
@@ -144,7 +142,7 @@ namespace Borigran.OneData.Platform.NHibernate.Transactions
             var methodName = invocation.Method.Name;
             var tx = state.Transaction;
 
-            logger.LogInformation("Transaction rolling back ({0})", ex, methodName);
+            logger.LogDebug("Transaction rolling back ({0})", ex, methodName);
             try
             {
                 if (tx.IsActive)
@@ -164,7 +162,7 @@ namespace Borigran.OneData.Platform.NHibernate.Transactions
             var methodName = invocation.Method.Name;
             var tx = state.Transaction;
 
-            logger.LogInformation("Transaction rolling back ({0})", ex, methodName);
+            logger.LogDebug("Transaction rolling back async ({0})", ex, methodName);
             try
             {
                 if (tx.IsActive)

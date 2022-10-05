@@ -9,7 +9,6 @@ namespace Borigran.OneData.WebApi.Models.Auth
         {
             RuleFor(x => x.PhoneNumber)
                 .SetValidator(new PhoneNumberPropertyValidator<RefreshTokenRequest>(phoneNumberHelper));
-            RuleFor(x => x.RefreshToken).NotEmpty();
             RuleFor(x => x.ExpiredToken).NotEmpty();
         }
     }

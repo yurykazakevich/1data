@@ -10,6 +10,7 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         Task<T> SaveAsync(T entity);
         Task<T> SaveOrUpdateAsync(T entity);
         Task UpdateAsync(T entity);
+        Task EvictAsync (T entity);
         Task<ICollection<T>> FindAllAsync(Order order, params ICriterion[] criteria);
         Task<ICollection<T>> FindAllAsync(DetachedCriteria criteria, params Order[] orders);
         Task<ICollection<T>> FindAllAsync(ResultSetOptions options, params DetachedCriteria[] criteria);

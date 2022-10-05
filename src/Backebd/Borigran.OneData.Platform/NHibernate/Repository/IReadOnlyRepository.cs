@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using NHibernate;
 using NHibernate.Criterion;
-using NHibernate.Transform;
 
 namespace Borigran.OneData.Platform.NHibernate.Repository
 {

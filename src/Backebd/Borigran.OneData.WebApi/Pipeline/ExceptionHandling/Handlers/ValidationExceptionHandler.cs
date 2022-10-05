@@ -23,7 +23,7 @@ namespace Borigran.OneData.WebApi.Pipeline.ExceptionHandling.Handlers
 
             var errorResponse = new ValidationErrorResponse
             {
-                Errors = exception.Errors.Select(x => new ValidationErrorResponseItem
+                ValidatioErrors = exception.Errors.Select(x => new ValidationErrorResponseItem
                 {
                     Message = x.ErrorMessage,
                     PropertyName = x.PropertyName

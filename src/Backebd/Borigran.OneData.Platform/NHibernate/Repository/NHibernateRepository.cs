@@ -51,5 +51,10 @@ namespace Borigran.OneData.Platform.NHibernate.Repository
         {
             await Session.UpdateAsync(entity);
         }
+
+        public async Task EvictAsync(T entity)
+        {
+            await Session.EvictAsync(entity);
+        }
     }
 }

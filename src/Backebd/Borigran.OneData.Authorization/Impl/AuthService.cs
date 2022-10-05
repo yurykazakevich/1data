@@ -7,6 +7,7 @@ using Borigran.OneData.Authorization.Domain.Entities;
 using Borigran.OneData.Platform.Encryption;
 using Borigran.OneData.Authorization.Dto;
 using Borigran.OneData.Platform.Helpers;
+using NHibernate.Linq;
 
 namespace Borigran.OneData.Authorization.Impl
 {
@@ -117,14 +118,13 @@ namespace Borigran.OneData.Authorization.Impl
             DateTime tokenGeneratedTime = DateTime.UtcNow;
             SetRefreshTokenForUser(user, tokenGeneratedTime);
 
-            await userRepository.SaveOrUpdateAsync(user);
+            user = await userRepository.SaveOrUpdateAsync(user);
 
             return new AuthTokenDto
             {
                 Token = tokenGenerator.GenerateAccessTokenForUser(user, tokenGeneratedTime),
                 RefreshToken = user.RefreshToken,
-                TokenCreated = tokenGeneratedTime,
-                TokenExpired = authOptions.AuthTokenExpired,
+                TokenExpired = tokenGeneratedTime.AddMinutes(authOptions.AuthTokenExpired),
                 UserId = user.Id,
                 PhoneNumber = user.PhoneNumber
             };
@@ -139,12 +139,7 @@ namespace Borigran.OneData.Authorization.Impl
 
         private string GenerateRefreshToken()
         {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
+            return Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
         }
 
         private bool ValdateCode(string phoneNumber, string verificationCode, string userProvidedCode)
@@ -154,7 +149,9 @@ namespace Borigran.OneData.Authorization.Impl
 
         private async Task<User> FindUserAsync(string phoneNumber)
         {
-            return await userRepository.FindOneAsync(Restrictions.Where<User>(x => x.PhoneNumber == phoneNumber));
+            return await userRepository.Query()
+                .Where(x => x.PhoneNumber == phoneNumber)
+                .FirstOrDefaultAsync();
         }
 
         private string SaltPhoneWithCode(string phoneNumber, string code)

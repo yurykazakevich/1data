@@ -1,10 +1,11 @@
 ﻿import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { useContext } from 'react'
-import { JwtContext } from '../context/JwtContext'
 import { LoaderContext } from '../context/LoaderContext'
 import { ModalContext } from '../context/ModalContext'
 import { IValidationErrorResponse, IErrorResponse } from '../models/ErrorModels'
 import { IRefreshTokenRequest, ITokenResponse } from '../models/AuthModels'
+import { GlobalStrings } from '../models/Values'
+import { useJwtData } from './jwtData'
 
 
 interface IApiCallResponse<TResponse> {
@@ -20,11 +21,11 @@ export enum ApiMethods {
     DELETE
 }
 
-export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods) {
+export function useApiCall<TRequest extends {} , TResponse>(url: string, method: ApiMethods) {
 
+    const jwtData = useJwtData()
     const { showLoader, hideLoader } = useContext(LoaderContext)
     //const { modal, open, close } = useContext(ModalContext)
-    const jwtContext = useContext(JwtContext)
 
     function buildApiUrl(relativeUrl: string): string {
         var baseApiUrl = process.env.REACT_APP_API_URL
@@ -35,21 +36,27 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
         return baseApiUrl + relativeUrl;
     }
 
-    async function VerifyJwtToken(): Promise<string> {
-        if (jwtContext.isTokenExpired(jwtContext.data)) {
-            await RefreshToken()
+    async function VerifyJwtToken(): Promise<string | undefined> {
+        var jwt = jwtData.getData()
+        if (jwt !== null) {
+            var now = new Date()
+            if (now > new Date(jwt.tokenExpired)) {
+                jwt = await RefreshToken(jwt.phoneNumber, jwt.token)
+                jwtData.setData(jwt)
+                localStorage.setItem(GlobalStrings.jwtDataKey, JSON.stringify(jwtData))
+            }
         }
 
-        return jwtContext.data.jwtToken
+        return jwt?.token
     }
 
-    async function RefreshToken(): Promise<void> {
-        var jwtResponse: ITokenResponse = await MakeRefreshTokenRequest()
+    async function RefreshToken(phoneNumber: string, token: string): Promise<ITokenResponse> {
+        var jwtResponse: ITokenResponse = await MakeRefreshTokenRequest(phoneNumber, token)
 
-        jwtContext.setFromResponse(jwtContext.data, jwtResponse)
+        return jwtResponse;
     }
 
-    async function MakeRefreshTokenRequest(): Promise<ITokenResponse> {
+    async function MakeRefreshTokenRequest(phoneNumber: string, token: string): Promise<ITokenResponse> {
         var requestConfig: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -60,16 +67,15 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
         const apiUrl = buildApiUrl("auth/token")
 
         var request: IRefreshTokenRequest = {
-            expiredToken: jwtContext.data.jwtToken,
-            phoneNumber: jwtContext.data.phoneNumber,
-            refreshToken: jwtContext.data.refreshToken
+            expiredToken: token,
+            phoneNumber: phoneNumber,
         } 
 
         axiosResponse = await axios.patch<TResponse>(apiUrl, request, requestConfig)
         return axiosResponse.data as ITokenResponse
     }
 
-    function chackAuthorize(mustBeAuthorized: boolean,
+    async function checkAuthorize(mustBeAuthorized: boolean,
         requestConfig: AxiosRequestConfig,
         response: IApiCallResponse<TResponse>) {
         if (mustBeAuthorized) {
@@ -80,7 +86,7 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
 
             requestConfig.headers = {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + VerifyJwtToken()
+                'Authorization': 'Bearer ' + (await VerifyJwtToken())
             }
         }
         else {
@@ -90,8 +96,9 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
         }
     }
 
-    function isLoggedIn(): IErrorResponse  | null {
-        if (jwtContext.isAuthorized(jwtContext.data)) {
+    function isLoggedIn(): IErrorResponse | null {
+        var jwt = jwtData.getData()
+        if (!jwt || !jwt.token) {
             console.debug("Попытка выполнить запрос " + url + " без авторизации")
 
             var errorResponse: IErrorResponse = {
@@ -106,11 +113,31 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
         }
     }
 
-    async function makeRequest(data: TRequest, authorize: boolean = true): Promise<IApiCallResponse<TResponse>> {
+    function ToQueryString(data: TRequest): string {
+        var keys = Object.keys(data)
+        var values = Object.values(data)
+        var queryString = '?'
 
-        var response: IApiCallResponse<TResponse> = { apiError: '', response: null }
+        for (var i = 0; i < keys.length; i++) {
+            queryString += keys[i] + '=' + values[i]
+            if (i < keys.length - 1) {
+                queryString += '&'
+            }
+        }
+
+        return queryString
+    }
+
+    async function makeRequest(data: TRequest, authorize : boolean = true): Promise<IApiCallResponse<TResponse>> {
+
+        var response: IApiCallResponse<TResponse> = { apiError: null, response: null }
         var requestConfig: AxiosRequestConfig = {
-            headers: {}
+            headers: {},
+            withCredentials: true,
+        }
+
+        if (url.startsWith("image")) {
+            requestConfig.responseType = "blob"
         }
 
         var axiosResponse: AxiosResponse<TResponse, any>
@@ -119,14 +146,15 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
         try {
             showLoader()
 
-            chackAuthorize(authorize, requestConfig, response)
+            await checkAuthorize(authorize, requestConfig, response)
             if (response.apiError !== null) {
                 return response
             }
 
             switch (method) {
                 case ApiMethods.GET:
-                    axiosResponse = await axios.get<TResponse>(apiUrl, requestConfig)
+                    var queryString = ToQueryString(data)
+                    axiosResponse = await axios.get<TResponse>(apiUrl + queryString, requestConfig)
                     response.response = axiosResponse.data as TResponse
                     break
                 case ApiMethods.POST:
@@ -140,8 +168,7 @@ export function useApiCall<TRequest, TResponse>(url: string, method: ApiMethods)
         } catch (e: unknown) {
             const error = e as AxiosError
             console.error(error.message)
-            if (error.code === 'ERR_BAD_REQUEST'
-                && (error.response?.data as IValidationErrorResponse) !== null) {
+            if (error.code === 'ERR_BAD_REQUEST') {
                 response.apiError = error.response?.data
             }
             else {

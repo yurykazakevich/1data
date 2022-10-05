@@ -9,5 +9,5 @@ interface IValidationErrorResponseItem {
 }
 
 export interface IValidationErrorResponse {
-    errors: Array<IValidationErrorResponseItem>
+    validationErrors: Array<IValidationErrorResponseItem>
 }

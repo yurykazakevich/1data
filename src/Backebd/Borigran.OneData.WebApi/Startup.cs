@@ -8,9 +8,12 @@ using Borigran.OneData.Platform.Helpers;
 using Borigran.OneData.WebApi.AppExtensions;
 using Borigran.OneData.WebApi.Logic;
 using Borigran.OneData.WebApi.Pipeline.ExceptionHandling;
+using Borigran.OneData.WebApi.Pipeline.RefreshToken;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -49,6 +52,7 @@ namespace Borigran.OneData.WebApi
                     .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
 
                 options.AddPolicy(CorsPolicyNames.ClientApp, builder => builder
+                    .AllowCredentials()
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .WithOrigins(allowedHosts));
@@ -108,6 +112,7 @@ namespace Borigran.OneData.WebApi
 
             loggerFactory.AddLog4Net();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<SecurityMiddleware>();
 
             AutofacContainer = app.ApplicationServices.GetAutofacRoot();
 
@@ -120,6 +125,13 @@ namespace Borigran.OneData.WebApi
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
 
             app.UseAuthentication();
             app.UseHttpsRedirection();

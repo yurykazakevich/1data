@@ -2,14 +2,20 @@
 using Borigran.OneData.Authorization;
 using Borigran.OneData.Authorization.Dto;
 using Borigran.OneData.WebApi.Models.Auth;
+using Borigran.OneData.WebApi.Pipeline.RefreshToken;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Borigran.OneData.WebApi.Controllers
 {
     public class AuthController : ApiControllerBase
     {
+        private const string RefreshTokenCookieKey = "Burial.Id";
         private readonly IMapper mapper;
         private readonly IAuthService authService;
 
@@ -39,6 +45,7 @@ namespace Borigran.OneData.WebApi.Controllers
 
             AuthTokenDto authToken = await authService.RegisterOrLoginAsync(loginData);
 
+            RefreshTokenCookieManager.AddCookie(Response, authToken.RefreshToken);
             return mapper.Map<TokenResponse>(authToken);
         }
 
@@ -52,8 +59,16 @@ namespace Borigran.OneData.WebApi.Controllers
         [HttpPatch("token/refresh")]
         public async Task<TokenResponse> RefreshToken([FromBody] RefreshTokenRequest request)
         {
+            string refreshToken;
+
+            if (!Request.Cookies.TryGetValue(RefreshTokenCookieKey, out refreshToken))
+            {
+                throw new SecurityTokenException("Could not find refresh token cookie");
+            }
             AuthTokenDto authToken = await authService.RefreshExpiredTokenAsync(request.ExpiredToken,
-                request.RefreshToken, request.PhoneNumber);
+                refreshToken, request.PhoneNumber);
+
+            RefreshTokenCookieManager.AddCookie(Response, authToken.RefreshToken);
 
             return mapper.Map<TokenResponse>(authToken);
         }

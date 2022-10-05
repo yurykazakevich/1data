@@ -10,7 +10,7 @@ namespace Borigran.OneData.WebApi.Logic
 {
     public class CItemImageProvider : ICItemImageProvider<Stream>
     {
-        public const string BacgroundImageName = "Фон.png";
+        public const string BacgroundImageName = "Фон.jpg";
         public const string NotFoundImageName = "notfound.png";
         private const string CItemFolderPath = "StaticResources\\citemimages";
 

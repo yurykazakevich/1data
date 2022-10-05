@@ -27,3 +27,8 @@ export enum ItemPositions {
     Left = 1,
     Right = 2
 }
+
+export const GlobalStrings = {
+    jwtDataKey: "jwt",
+    phoneNumberKey: "phoneNumber"
+}

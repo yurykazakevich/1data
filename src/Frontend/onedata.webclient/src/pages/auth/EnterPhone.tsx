@@ -4,8 +4,10 @@ import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ValidationError } from '../../components/ValidationError'
 import { IPhoneNumberRequest, IVerificationCodeResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
-import { IJwtContext, JwtContext } from '../../context/JwtContext'
 import { IValidationErrorResponse } from '../../models/ErrorModels'
+import { Button } from 'react-bootstrap'
+import { GlobalStrings } from '../../models/Values'
+import { useJwtData } from '../../hooks/jwtData'
 
 export function EnterPhone() {
     const [phoneNumberValue, setphoneNumberValue] = useState('')
@@ -13,13 +15,18 @@ export function EnterPhone() {
     const sendSmsCall = useApiCall<IPhoneNumberRequest, IVerificationCodeResponse>("auth/sendsmscode", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
     const redirect = useRedirect()
-    const jwtContext: IJwtContext = useContext(JwtContext)
+    const jwtData = useJwtData()
 
     useEffect(() => {
         if (preLoginContext.phoneNumber.length > 0) {
             setphoneNumberValue(preLoginContext.phoneNumber)
-        } else if (jwtContext.data?.phoneNumber.length > 0) {
-            setphoneNumberValue(preLoginContext.phoneNumber)
+        } else {
+            var jwt = jwtData.getData()
+            if (jwt && jwt.phoneNumber) {
+                setphoneNumberValue(jwt.phoneNumber)
+
+                jwtData.clear()
+            }
         }
     }, [])
     
@@ -38,7 +45,7 @@ export function EnterPhone() {
             phoneNumber: phoneNumberValue
         }
 
-        const response = (await sendSmsCall.makeRequest(request))
+        const response = (await sendSmsCall.makeRequest(request, false))
         if (response.response !== null) {
             preLoginContext.phoneNumber = phoneNumberValue
             preLoginContext.verificationCode = response.response.code
@@ -46,9 +53,9 @@ export function EnterPhone() {
             redirect.redirectToPage('/auth/code')
         }
         else {
-            const validatioErrors = response.apiError as IValidationErrorResponse
-            if (validatioErrors !== null) {
-                setError(validatioErrors.errors[0].message)
+            if (response.apiError.validationErrors) {
+                const validatioErrors = response.apiError as IValidationErrorResponse
+                setError(validatioErrors.validationErrors[0].message)
             }
             else {
                 alert(response.apiError)
@@ -65,7 +72,6 @@ export function EnterPhone() {
             <label>Номер телефона</label>
             <input
                 type="text"
-                className="border py-2 px-4 mb-2 w-full outline-0"
                 placeholder="+375(xx)xxxxxxx"
                 value={phoneNumberValue}
                 onChange={changeHandler}
@@ -73,7 +79,7 @@ export function EnterPhone() {
 
             {error && <ValidationError error={error} />}
 
-            <button type="submit" className="py-2 px-4 border bg-yellow-400 hover:text-white">Send</button>
+            <Button variant="outline-dark" type="submit">Отправить</Button>
         </form>
     )
 }

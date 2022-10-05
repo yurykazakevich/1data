@@ -3,9 +3,11 @@ import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ValidationError } from '../../components/ValidationError'
 import { ILoginReuest, ITokenResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
-import { IJwtContext, JwtContext } from '../../context/JwtContext'
 import { IValidationErrorResponse } from '../../models/ErrorModels'
 import { useRedirect } from '../../hooks/useRedirect'
+import { Button } from 'react-bootstrap'
+import { GlobalStrings } from '../../models/Values'
+import { useJwtData } from '../../hooks/jwtData'
 
 export function VerifyCode() {
     const [value, setValue] = useState('')
@@ -13,11 +15,11 @@ export function VerifyCode() {
     const sendSmsCall = useApiCall<ILoginReuest, ITokenResponse>("auth/login", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
     const redirect = useRedirect()
-    const jwtContext: IJwtContext = useContext(JwtContext)
-
+    const jwtData = useJwtData()
 
     useEffect(() => {
-        if (preLoginContext.phoneNumber.length === 0) {
+        if (!preLoginContext.phoneNumber || preLoginContext.phoneNumber.length === 0 ||
+            !preLoginContext.verificationCode || preLoginContext.verificationCode.length === 0) {
             redirect.redirectToLogin()
         }
     }, [])
@@ -45,21 +47,21 @@ export function VerifyCode() {
         if (response.response !== null) {
             const jwtResponse = response.response
 
-            jwtContext.setFromResponse(jwtContext.data, jwtResponse)
+            jwtData.setData(jwtResponse)
 
             preLoginContext.phoneNumber = ''
             preLoginContext.verificationCode = ''
 
-            redirect.redirectToHome()
+            redirect.redirectToMonumentBuilder()
         }
         else {
-            const validatioErrors = response.apiError as IValidationErrorResponse
-            if (validatioErrors !== null) {
+            if (response.apiError.validationErrors) {
+                const validatioErrors = response.apiError as IValidationErrorResponse
                 var isFormField: boolean = false
-                for (var i = 0; i < validatioErrors.errors.length; i++) {
-                    if (validatioErrors.errors[i].propertyName === 'userProvidedCode') {
+                for (var i = 0; i < validatioErrors.validationErrors.length; i++) {
+                    if (validatioErrors.validationErrors[i].propertyName === 'userProvidedCode') {
                         isFormField = true
-                        setError(validatioErrors.errors[i].message)
+                        setError(validatioErrors.validationErrors[i].message)
                     }
                 }
 
@@ -89,7 +91,7 @@ export function VerifyCode() {
 
             {error && <ValidationError error={error} />}
 
-            <button type="submit" className="py-2 px-4 border bg-yellow-400 hover:text-white">Отправить</button>
+            <Button variant="outline-dark" type="submit">Отправить</Button>
         </form>
     )
 }

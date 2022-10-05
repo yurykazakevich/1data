@@ -20,6 +20,8 @@ namespace Borigran.OneData.WebApi.AppExtensions
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
+                    options.RequireHttpsMetadata = true;
+                    options.SaveToken = true;
                     options.TokenValidationParameters = tokenValidationParameters;
                 });
         }

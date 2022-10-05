@@ -6,7 +6,6 @@ import reportWebVitals from './reportWebVitals';
 import { LoaderState } from './context/LoaderContext';
 import { BrowserRouter } from 'react-router-dom'
 import { ModalState } from './context/ModalContext';
-import { JwtState } from './context/JwtContext';
 import './styles/onedata.scss'
 
 const root = ReactDOM.createRoot(
@@ -15,13 +14,11 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <React.StrictMode>
-        <JwtState>
-            <LoaderState>
-                <BrowserRouter>
-                    <App />
-                </BrowserRouter>
-            </LoaderState>
-        </JwtState>
+        <LoaderState>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </LoaderState>
     </React.StrictMode>
 );
 
