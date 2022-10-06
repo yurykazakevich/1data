@@ -1,5 +1,5 @@
 @import "~bootstrap/scss/bootstrap";
-@import "Loading.scss";
+@import "loading.scss";
 @import "monumentBuilders.scss";
 
 body {
@@ -8,5 +8,9 @@ body {
 button.btn-block,
 input[type=button].btn-block {
     width: 100%
+}
+
+.custom-item-group {
+    background-color: white!important
 }
 

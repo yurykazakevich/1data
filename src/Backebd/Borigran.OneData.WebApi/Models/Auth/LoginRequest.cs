@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace Borigran.OneData.WebApi.Models.Auth
+﻿namespace Borigran.OneData.WebApi.Models.Auth
 {
     public class LoginRequest : PhoneNumberRequest
     {

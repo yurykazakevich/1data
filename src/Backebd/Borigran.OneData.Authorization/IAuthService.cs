@@ -6,7 +6,8 @@ namespace Borigran.OneData.Authorization
     {
         Task<string> GetVerificationCodeAsync(string phoneNumber);
         Task<AuthTokenDto> RegisterOrLoginAsync(LoginDto data);
-        Task LogoutAsync(string phoneNumber);
-        Task<AuthTokenDto> RefreshExpiredTokenAsync(string expiredToken, string refreshToken, string phoneNumber);
+        Task LogoutAsync(int userId);
+        Task<AuthTokenDto> RefreshExpiredTokenAsync(string expiredToken, 
+            string refreshToken, int userId);
     }
 }

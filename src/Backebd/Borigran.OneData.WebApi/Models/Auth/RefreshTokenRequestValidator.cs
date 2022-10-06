@@ -1,14 +1,13 @@
-﻿using Borigran.OneData.Platform.Helpers;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace Borigran.OneData.WebApi.Models.Auth
 {
     public class RefreshTokenRequestValidator : AbstractValidator<RefreshTokenRequest>
     {
-        public RefreshTokenRequestValidator(IPhoneNumberHelper phoneNumberHelper)
+        public RefreshTokenRequestValidator()
         {
-            RuleFor(x => x.PhoneNumber)
-                .SetValidator(new PhoneNumberPropertyValidator<RefreshTokenRequest>(phoneNumberHelper));
+            RuleFor(x => x.UserId)
+                .SetValidator(new UserIdPropertyValidator<RefreshTokenRequest>());
             RuleFor(x => x.ExpiredToken).NotEmpty();
         }
     }

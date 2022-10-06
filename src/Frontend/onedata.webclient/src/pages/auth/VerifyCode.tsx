@@ -1,17 +1,18 @@
 ﻿import React, { useState, useEffect, useContext } from 'react'
 import { useApiCall, ApiMethods } from '../../hooks/apiCall'
-import { ValidationError } from '../../components/ValidationError'
 import { ILoginReuest, ITokenResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
 import { IValidationErrorResponse } from '../../models/ErrorModels'
 import { useRedirect } from '../../hooks/useRedirect'
-import { Button } from 'react-bootstrap'
-import { GlobalStrings } from '../../models/Values'
+import { Button, Form, InputGroup } from 'react-bootstrap'
 import { useJwtData } from '../../hooks/jwtData'
 
 export function VerifyCode() {
-    const [value, setValue] = useState('')
-    const [error, setError] = useState('')
+    const codeLength = parseInt(process.env.REACT_APP_VERIFICATION_CODE_LENGTH as string)
+    const defaultCodeErrorMessage = 'Код должен состоять из ' + codeLength + '-ти цифр'
+    const [codeError, setCodeError] = useState(defaultCodeErrorMessage)
+    const [code, setCode] = useState('')
+    const [isCodeValid, setIsCodeValid] = useState(true)
     const sendSmsCall = useApiCall<ILoginReuest, ITokenResponse>("auth/login", ApiMethods.POST)
     const preLoginContext = useContext(PreLoginContext)
     const redirect = useRedirect()
@@ -26,20 +27,21 @@ export function VerifyCode() {
 
     const submitHandler = async (event: React.FormEvent) => {
         event.preventDefault()
-        setError('')
+        setCodeError(defaultCodeErrorMessage)
+        setIsCodeValid(true)
 
         var codeLength = parseInt(process.env.REACT_APP_VERIFICATION_CODE_LENGTH as string)
 
-        if (value.trim().length !== codeLength) {
-            setError('Код должен состоять из ' + codeLength + '-ти цифр')
+        if (code.trim().length !== codeLength) {
+            setIsCodeValid(false)
             return
         }
 
         const request: ILoginReuest = {
             phoneNumber: preLoginContext.phoneNumber,
-            userProvidedCode: value,
+            userProvidedCode: code,
             verificationCode: preLoginContext.verificationCode,
-            isPhisical: true //TODO Request this value from UI
+            isPhisical: !preLoginContext.isOrg
         }
 
         const response = (await sendSmsCall.makeRequest(request, false))
@@ -51,6 +53,7 @@ export function VerifyCode() {
 
             preLoginContext.phoneNumber = ''
             preLoginContext.verificationCode = ''
+            preLoginContext.isOrg = false
 
             redirect.redirectToMonumentBuilder()
         }
@@ -61,7 +64,8 @@ export function VerifyCode() {
                 for (var i = 0; i < validatioErrors.validationErrors.length; i++) {
                     if (validatioErrors.validationErrors[i].propertyName === 'userProvidedCode') {
                         isFormField = true
-                        setError(validatioErrors.validationErrors[i].message)
+                        setCodeError(validatioErrors.validationErrors[i].message)
+                        setIsCodeValid(true)
                     }
                 }
 
@@ -75,23 +79,31 @@ export function VerifyCode() {
         }
     }
 
-    const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValue(event.target.value)
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setCode(event.target.value)
     }
 
     return (
-        <form onSubmit={submitHandler}>
-            <label>Введите проверочный код из СМС</label>
-            <input
-                type="text"
-                className="border py-2 px-4 mb-2 w-full outline-0"
-                value={value}
-                onChange={changeHandler}
-            />
-
-            {error && <ValidationError error={error} />}
-
-            <Button variant="outline-dark" type="submit">Отправить</Button>
-        </form>
+        <>
+            <div className="text-center">
+                <h2>Введите код</h2>
+                <p>Введите код, который Вы получили в СМС. После этого Вы сможете начать оформление заказа</p>
+            </div>
+            <InputGroup className="mb-3" hasValidation>
+                <InputGroup.Text className="custom-item-group">Ваш код:</InputGroup.Text>
+                <Form.Control
+                    isInvalid={!isCodeValid}
+                    onChange={handleChange}
+                    value={code} />
+                <Form.Control.Feedback type="invalid">
+                    { codeError }
+                </Form.Control.Feedback>
+            </InputGroup>
+            <div className="d-grid gap-2">
+                <Button variant="primary" type="button" size="lg" onClick={submitHandler}>
+                    Войти
+                </Button>
+            </div>
+        </>
     )
 }

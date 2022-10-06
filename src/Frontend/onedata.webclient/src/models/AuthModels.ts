@@ -1,5 +1,6 @@
 ﻿export interface IPhoneNumberRequest {
-    phoneNumber: string
+    phoneNumber: string,
+    isPhisical: boolean
 }
 
 export interface IVerificationCodeResponse {
@@ -16,7 +17,8 @@ export interface ITokenResponse {
     token: string
     tokenExpired: Date,
     userId: number,
-    phoneNumber: string
+    phoneNumber: string,
+    isPhisical: boolean
 }
 
 export interface IRefreshTokenRequest extends IPhoneNumberRequest {

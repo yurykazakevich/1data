@@ -8,5 +8,6 @@ namespace Borigran.OneData.Authorization.Dto
         public DateTime TokenExpired { get; set; }
         public int UserId { get; set; }
         public string PhoneNumber { get; set; }
+        public bool IsPhisical { get; set; }
     }
 }

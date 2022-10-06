@@ -41,7 +41,7 @@ export function useApiCall<TRequest extends {} , TResponse>(url: string, method:
         if (jwt !== null) {
             var now = new Date()
             if (now > new Date(jwt.tokenExpired)) {
-                jwt = await RefreshToken(jwt.phoneNumber, jwt.token)
+                jwt = await RefreshToken(jwt.phoneNumber, jwt.isPhisical, jwt.token)
                 jwtData.setData(jwt)
                 localStorage.setItem(GlobalStrings.jwtDataKey, JSON.stringify(jwtData))
             }
@@ -50,13 +50,13 @@ export function useApiCall<TRequest extends {} , TResponse>(url: string, method:
         return jwt?.token
     }
 
-    async function RefreshToken(phoneNumber: string, token: string): Promise<ITokenResponse> {
-        var jwtResponse: ITokenResponse = await MakeRefreshTokenRequest(phoneNumber, token)
+    async function RefreshToken(phoneNumber: string, isPhisical: boolean, token: string): Promise<ITokenResponse> {
+        var jwtResponse: ITokenResponse = await MakeRefreshTokenRequest(phoneNumber, isPhisical, token)
 
         return jwtResponse;
     }
 
-    async function MakeRefreshTokenRequest(phoneNumber: string, token: string): Promise<ITokenResponse> {
+    async function MakeRefreshTokenRequest(phoneNumber: string, isPhisical: boolean, token: string): Promise<ITokenResponse> {
         var requestConfig: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
@@ -69,6 +69,7 @@ export function useApiCall<TRequest extends {} , TResponse>(url: string, method:
         var request: IRefreshTokenRequest = {
             expiredToken: token,
             phoneNumber: phoneNumber,
+            isPhisical: isPhisical
         } 
 
         axiosResponse = await axios.patch<TResponse>(apiUrl, request, requestConfig)

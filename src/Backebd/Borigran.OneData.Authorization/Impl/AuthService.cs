@@ -1,6 +1,5 @@
 ﻿using Borigran.OneData.Platform.NHibernate.Repository;
 using Borigran.OneData.Platform.NHibernate.Transactions;
-using NHibernate.Criterion;
 using System.Security.Cryptography;
 using Microsoft.IdentityModel.Tokens;
 using Borigran.OneData.Authorization.Domain.Entities;
@@ -62,7 +61,7 @@ namespace Borigran.OneData.Authorization.Impl
                 throw new SecurityTokenException("Invalidverification code");
             }
 
-            var user = await FindUserAsync(cleanedPhoneNumber);
+            var user = await FindUserAsync(cleanedPhoneNumber, data.IsPhisical);
 
             if (user == null)
             {
@@ -76,9 +75,9 @@ namespace Borigran.OneData.Authorization.Impl
         }
 
         [Transaction]
-        public async Task LogoutAsync(string phoneNumber)
+        public async Task LogoutAsync(int userId)
         {
-            var user = await FindUserAsync(phoneNumber);
+            var user = await userRepository.GetAsync(userId);
 
             if (user != null)
             {
@@ -90,18 +89,21 @@ namespace Borigran.OneData.Authorization.Impl
         }
 
         [Transaction]
-        public async Task<AuthTokenDto> RefreshExpiredTokenAsync(string expiredToken, string refreshToken, string phoneNumber)
+        public async Task<AuthTokenDto> RefreshExpiredTokenAsync(
+            string expiredToken, 
+            string refreshToken, 
+            int userId)
         {
-            var principal = tokenGenerator.GetPrincipalFromToken(expiredToken, true);
-            if (principal.Identity != null && principal.Identity.Name != phoneNumber)
-            {
-                throw new SecurityTokenException("Invalid user");
-            }
-
-            var user = await FindUserAsync(phoneNumber);
+            var user = await userRepository.GetAsync(userId);
             if (user == null)
             {
                 throw new SecurityTokenException("User not found");
+            }
+
+            var principal = tokenGenerator.GetPrincipalFromToken(expiredToken, true);
+            if (principal.Identity != null && principal.Identity.Name != user.PhoneNumber)
+            {
+                throw new SecurityTokenException("Invalid user");
             }
 
             if (user.RefreshToken != refreshToken ||
@@ -126,7 +128,8 @@ namespace Borigran.OneData.Authorization.Impl
                 RefreshToken = user.RefreshToken,
                 TokenExpired = tokenGeneratedTime.AddMinutes(authOptions.AuthTokenExpired),
                 UserId = user.Id,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                IsPhisical = user.IsPhisical
             };
         }
 
@@ -147,10 +150,11 @@ namespace Borigran.OneData.Authorization.Impl
             return encryptor.ValidateHash(verificationCode, SaltPhoneWithCode(phoneNumber, userProvidedCode));
         }
 
-        private async Task<User> FindUserAsync(string phoneNumber)
+        private async Task<User> FindUserAsync(string phoneNumber, bool isPhisical)
         {
             return await userRepository.Query()
                 .Where(x => x.PhoneNumber == phoneNumber)
+                .Where(x => x.IsPhisical == isPhisical)
                 .FirstOrDefaultAsync();
         }
 
