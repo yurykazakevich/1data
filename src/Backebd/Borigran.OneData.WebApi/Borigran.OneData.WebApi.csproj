@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Borigran.OneData.Authorization\Borigran.OneData.Authorization.csproj" />
+    <ProjectReference Include="..\Borigran.OneData.Business\Borigran.OneData.Business.csproj" />
     <ProjectReference Include="..\Borigran.OneData.Platform\Borigran.OneData.Platform.csproj" />
   </ItemGroup>
 

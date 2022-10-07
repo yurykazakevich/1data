@@ -8,7 +8,6 @@ namespace Borigran.OneData.Domain.NHibernate.Mapping
             :base()
         {
             Map(x => x.Name).Not.Nullable();
-            Map(x => x.ImageName).Nullable();
             Map(x => x.Price).Not.Nullable();
             Map(x => x.ArticleNumber).Not.Nullable();
             Map(x => x.Material).Not.Nullable();

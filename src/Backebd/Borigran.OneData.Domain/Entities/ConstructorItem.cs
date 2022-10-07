@@ -4,9 +4,7 @@ namespace Borigran.OneData.Domain.Entities
 {
     public class ConstructorItem : EntityBase
     {
-        public virtual string? Name { get; set; }
-
-        public virtual string? ImageName { get; set; }
+        public virtual string Name { get; set; }
 
         public virtual decimal Price { get; set; }
 

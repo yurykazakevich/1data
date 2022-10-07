@@ -3,6 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Borigran.OneData.Authorization;
 using Borigran.OneData.Authorization.Dependencies;
 using Borigran.OneData.Authorization.Impl;
+using Borigran.OneData.Business.Dependencies;
 using Borigran.OneData.Platform.Dependencies;
 using Borigran.OneData.Platform.Helpers;
 using Borigran.OneData.WebApi.AppExtensions;
@@ -82,6 +83,7 @@ namespace Borigran.OneData.WebApi
             // for you.
             builder.RegisterModule(new OneDataAutofacModule(Configuration));
             builder.RegisterModule(new AuthorithationModule(authOptions));
+            builder.RegisterModule(new BusinessModule());
 
             builder.RegisterAssemblyTypes(this.GetType().Assembly)
                 .Where(t => t.IsClosedTypeOf(typeof(IValidator<>)))
