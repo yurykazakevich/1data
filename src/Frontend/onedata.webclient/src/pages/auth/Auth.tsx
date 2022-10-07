@@ -12,13 +12,8 @@ export function Auth() {
             <PreLoginContext.Provider value={{ phoneNumber, verificationCode, isOrg }}>
                 <Container fluid="xl">
                     <Row>
-                        <Col>
-                            <h1>Авторизация</h1>
-                        </Col>
-                    </Row>
-                    <Row>
                         <Col></Col>
-                        <Col lg={4}>
+                        <Col lg={4} className="mt-5">
                             <Outlet />
                         </Col>
                         <Col></Col>

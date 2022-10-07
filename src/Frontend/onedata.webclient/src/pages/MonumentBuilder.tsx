@@ -1,5 +1,4 @@
-﻿import React from 'react';
-import Container from 'react-bootstrap/Container';
+﻿import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import { useState } from 'react'
 import Col from 'react-bootstrap/Col';
@@ -31,7 +30,6 @@ function MonumentBuilder() {
             ? 'prev-step-number'
             : 'next-step-number'
     }
-
     return (
       <Container fluid="xl">
           <Row className="flex-nowrap">
@@ -55,35 +53,43 @@ function MonumentBuilder() {
                   <Image src="images/headset.svg" />
               </Col>
           </Row>
-          <Row>
+          <Row className="flex-nowrap">
               <Col sm={'auto'} className={'p-1'}>
-                  <div className={'step-number-container text-center'}>
-                      <Container>
-                            <Row className={'py-1' }>
-                                <Col className={getStepNumberClass(1)}>1</Col>
+                        <Container className="step-number-container text-center h-100">
+                        <Row className='py-1 step-number-row'>
+                            <Col className="p-0">
+                                <div className={getStepNumberClass(1) + " p-1 text-center"}>1</div>
+                            </Col>
                           </Row>
-                            <Row className={'py-1'}>
-                                <Col className={getStepNumberClass(2)}>2</Col>
+                        <Row className='py-1 step-number-row'>
+                            <Col className="p-0">
+                                <div className={getStepNumberClass(2) + " p-1 text-center"}>2</div>
+                            </Col>
                           </Row>
-                            <Row className={'py-1'}>
-                                <Col className={getStepNumberClass(3)}>3</Col>
+                        <Row className='py-1 step-number-row'>
+                            <Col className="p-0">
+                                <div className={getStepNumberClass(3) + " p-1 text-center"}>3</div>
+                            </Col>
                           </Row>
-                            <Row className={'py-1'}>
-                                <Col className={getStepNumberClass(4)}>4</Col>
+                        <Row className='py-1 step-number-row'>
+                            <Col className="p-0">
+                                <div className={getStepNumberClass(4) + " p-1 text-center"}>4</div>
+                            </Col>
                           </Row>
-                            <Row className={'py-1'}>
-                                <Col className={getStepNumberClass(5)}>5</Col>
+                        <Row className='py-1'>
+                            <Col className="p-0">
+                                <div className={getStepNumberClass(5) + " p-1 text-center"}>5</div>
+                            </Col>
                           </Row>
                       </Container>
-                  </div>
               </Col>
-                {stepNumber === 1 && <MonumentCatalog />}
-                {stepNumber === 2 && <MonumentConstructor centerColumnWidth={9} />}
-                {stepNumber === 3 && <MonumentStela />}
-                {stepNumber === 4 && <MonumentBase />}
-                {stepNumber === 5 && <MonumentResult />}
+                {stepNumber == 1 && <MonumentCatalog />}
+                {stepNumber == 2 && <MonumentConstructor centerColumnWidth={9} />}
+                {stepNumber == 3 && <MonumentStela />}
+                {stepNumber == 4 && <MonumentBase />}
+                {stepNumber == 5 && <MonumentResult />}
           </Row>
-          <Row>
+          <Row className="flex-nowrap my-2">
                 <Col sm={'auto'} className={'p-1'}>
                   <div className={'step-number-container'}>
                   </div>

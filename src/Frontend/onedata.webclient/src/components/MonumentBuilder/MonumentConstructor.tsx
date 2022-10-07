@@ -7,6 +7,7 @@ import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { IGetBgImageRequest } from '../../models/MonumentBuilder';
 import { useUrlBuilder } from '../../hooks/urlBuilder';
 import { IImageUrlResponse } from '../../models/Global';
+import ConstructorItemList from './ConstructorItmeList';
 
 enum ConstructorRightViewTypes {
     ItemPanel,
@@ -59,7 +60,7 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         return rightViewType === ConstructorRightViewTypes.ItemDetails
     }
 
-    function showItemPanel(itemType: string) {
+    function showItemPanel() {
         setRightViewType(ConstructorRightViewTypes.ItemPanel)
     }
 
@@ -67,7 +68,7 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         setRightViewType(ConstructorRightViewTypes.ItemList)
     }
 
-    function showItemDetails(itemType: string) {
+    function showItemDetails(itemId: number) {
         setRightViewType(ConstructorRightViewTypes.ItemDetails)
     }
 
@@ -99,7 +100,7 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         </Col>
         <Col>
             {isItemPanel() && <ConstructorItemPanel showItemList={ showItemList } />}
-            {isItemList() && <p>Item List</p>}
+                {isItemList() && <ConstructorItemList showItemDetails={showItemDetails} backToMenu={showItemPanel} />}
             {isItemDetails() && <p>Item Details</p>}
         </Col>
     </>

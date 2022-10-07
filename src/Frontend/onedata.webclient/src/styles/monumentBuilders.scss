@@ -2,7 +2,17 @@ $stepNumberContainerWidth: 30px;
 
 .step-number-container
 {
+    .step-number-row {
+        height: 23%!important
+    }
+
     width: $stepNumberContainerWidth;
+}
+
+.item-panel{
+    .item-panel-row {
+        height: 15%!important
+    }
 }
 
 .prev-step-number {
