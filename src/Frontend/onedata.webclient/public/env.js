@@ -18,14 +18,9 @@ window.env = {
   "HOMEDRIVE": "C:",
   "HOMEPATH": "\\Users\\yuryk",
   "HTTPS": "true",
-  "IIS_BIN": "C:\\Program Files\\IIS Express",
-  "IIS_DRIVE": "C:",
-  "IIS_SITES_HOME": "D:\\iuriy\\Documents\\My Web Sites",
-  "IIS_USER_HOME": "D:\\iuriy\\Documents\\IISExpress",
   "INIT_CWD": "D:\\Projects\\Borigran\\Git\\src\\Frontend\\onedata.webclient",
   "LOCALAPPDATA": "C:\\Users\\yuryk\\AppData\\Local",
   "LOGONSERVER": "\\\\DESKTOP-OM5O8G3",
-  "MONO_ANDROID_PATH": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\MSBuild\\Xamarin\\Android",
   "MSBuildLoadMicrosoftTargetsReadOnly": "true",
   "MSMPI_BENCHMARKS": "C:\\Program Files\\Microsoft MPI\\Benchmarks\\",
   "MSMPI_BIN": "C:\\Program Files\\Microsoft MPI\\Bin\\",
@@ -74,7 +69,7 @@ window.env = {
   "REACT_APP_LOGIN_URL": "/auth/phone",
   "REACT_APP_MONUMENTBUILDER_URL": "/monumentbuilder",
   "REACT_APP_VERIFICATION_CODE_LENGTH": "6",
-  "ServiceHubLogSessionKey": "D8F22595",
+  "ServiceHubLogSessionKey": "CA5ACA09",
   "SESSIONNAME": "Console",
   "SignInWithHomeTenantOnly": "False",
   "SystemDrive": "C:",
@@ -93,6 +88,5 @@ window.env = {
   "VSAPPIDNAME": "devenv.exe",
   "VSLANG": "1033",
   "VSSKUEDITION": "Community",
-  "windir": "C:\\Windows",
-  "XAMARIN_ANDROID_REGKEY": "SOFTWARE\\Xamarin\\VisualStudio\\17.0_b97774b2\\Android"
+  "windir": "C:\\Windows"
 };

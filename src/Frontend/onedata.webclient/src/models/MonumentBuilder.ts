@@ -1,5 +1,5 @@
 import { BurialTypes } from "./Values";
 
-export interface IGenBgImageRequest {
+export interface IGetBgImageRequest {
     burialType: BurialTypes
 }

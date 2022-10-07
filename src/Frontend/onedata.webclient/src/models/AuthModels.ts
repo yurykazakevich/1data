@@ -21,6 +21,10 @@ export interface ITokenResponse {
     isPhisical: boolean
 }
 
-export interface IRefreshTokenRequest extends IPhoneNumberRequest {
+export interface IUserIdRequest {
+    userId: number
+}
+
+export interface IRefreshTokenRequest extends IUserIdRequest {
     expiredToken: string
 }

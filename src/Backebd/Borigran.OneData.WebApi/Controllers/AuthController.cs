@@ -50,9 +50,9 @@ namespace Borigran.OneData.WebApi.Controllers
         }
 
         [HttpPatch("logout")]
-        public async Task Logout([FromBody] PhoneNumberRequest request)
+        public async Task Logout([FromBody] UserIdRequest request)
         {
-            await authService.LogoutAsync(request.PhoneNumber);
+            await authService.LogoutAsync(request.UserId);
         }
 
         [AllowAnonymous]
@@ -66,7 +66,7 @@ namespace Borigran.OneData.WebApi.Controllers
                 throw new SecurityTokenException("Could not find refresh token cookie");
             }
             AuthTokenDto authToken = await authService.RefreshExpiredTokenAsync(request.ExpiredToken,
-                refreshToken, request.PhoneNumber);
+                refreshToken, request.UserId);
 
             RefreshTokenCookieManager.AddCookie(Response, authToken.RefreshToken);
 

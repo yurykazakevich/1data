@@ -34,7 +34,7 @@ function MonumentBuilder() {
 
     return (
       <Container fluid="xl">
-          <Row>
+          <Row className="flex-nowrap">
               <Col sm={'auto'} className={ 'p-1' }>
                   <div className={'step-number-container text-center'}>
                         <Button variant="link" onClick={previousStep} disabled={ stepNumber === 1 }>

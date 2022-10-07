@@ -3,7 +3,7 @@ import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { ILoginReuest, ITokenResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
 import { IValidationErrorResponse } from '../../models/ErrorModels'
-import { useRedirect } from '../../hooks/useRedirect'
+import { useRedirect } from '../../hooks/redirect'
 import { Button, Form, InputGroup } from 'react-bootstrap'
 import { useJwtData } from '../../hooks/jwtData'
 
@@ -100,7 +100,7 @@ export function VerifyCode() {
                 </Form.Control.Feedback>
             </InputGroup>
             <div className="d-grid gap-2">
-                <Button variant="primary" type="button" size="lg" onClick={submitHandler}>
+                <Button variant="dark" type="button" size="lg" onClick={submitHandler}>
                     Войти
                 </Button>
             </div>

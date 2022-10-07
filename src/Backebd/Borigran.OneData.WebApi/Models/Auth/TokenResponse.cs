@@ -6,7 +6,7 @@ namespace Borigran.OneData.WebApi.Models.Auth
     {
         public string Token { get; set; }
         public DateTime TokenExpired { get; set; }
-        public int Userid { get; set; }
+        public int UserId { get; set; }
         public string PhoneNumber { get; set; }
         public bool IsPhisical { get; set; }
     }

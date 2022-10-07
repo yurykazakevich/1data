@@ -1,5 +1,5 @@
 ﻿import React, { useState, useContext, useEffect, useRef } from 'react'
-import { useRedirect } from '../../hooks/useRedirect'
+import { useRedirect } from '../../hooks/redirect'
 import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { IPhoneNumberRequest, IVerificationCodeResponse } from '../../models/AuthModels'
 import { PreLoginContext } from '../../context/PreLoginContext'
@@ -139,7 +139,7 @@ export function EnterPhone() {
                     isInvalid={!isPersonalDataValid} />
             </InputGroup>
             <div className="d-grid gap-2">
-                <Button variant="primary" type="button" size="lg" onClick={submitHandler}>
+                <Button variant="dark" type="button" size="lg" onClick={submitHandler}>
                     Отправить
                 </Button>
             </div>
