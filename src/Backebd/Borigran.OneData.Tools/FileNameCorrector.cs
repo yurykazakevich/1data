@@ -1,5 +1,6 @@
 ﻿namespace Borigran.OneData.Tools
 {
+    [Obsolete]
     public class FileNameCorrector
     {
         public static void FixFileNames()

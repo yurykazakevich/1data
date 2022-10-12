@@ -4,4 +4,6 @@ using Borigran.OneData.Tools;
 Console.WriteLine("Hello, World!");
 
 //FileNameCorrector.FixFileNames();
-SqlCorrector.CorrectData();
+//SqlCorrector.CorrectData();
+//ImageCorrector.ResizeImages();
+FileNameFixer.FixImageNames();
