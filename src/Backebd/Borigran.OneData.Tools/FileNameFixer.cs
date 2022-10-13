@@ -2,7 +2,7 @@
 {
     public class FileNameFixer
     {
-        public const string RootPath = "D:\\Projects\\Borigran\\Git\\src\\Backebd\\Borigran.OneData.WebApi\\StaticResources\\CItemImages";
+        public const string RootPath = "D:\\Projects\\Borigran\\Git\\src\\Backebd\\Borigran.OneData.WebApi\\StaticResources";
         public const string TargetFileSearchPattern = "*.png";
         public const int NewImageWidth = 800;
         public static void FixImageNames()
@@ -62,6 +62,14 @@
             if (fileName.StartsWith("Форма 2"))
             {
                 fileName = fileName.Replace("Форма 2", "Форма №2");
+            }
+            if (fileName.EndsWith("верхняя слева") || fileName.EndsWith("нижняя слева"))
+            {
+                fileName = fileName.Substring(0, fileName.Length - 6);
+            }
+            if (fileName.EndsWith("верхняя справа") || fileName.EndsWith("нижняя справа"))
+            {
+                fileName = fileName.Substring(0, fileName.Length - 7);
             }
 
             string newFilePath = Path.Combine(dir, $"{fileName}{ext}");
