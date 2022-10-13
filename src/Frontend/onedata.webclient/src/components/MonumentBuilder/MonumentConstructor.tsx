@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, ReactEventHandler, SyntheticEvent } from 'react';
 import { BurialTypes, CItemTypes } from '../../models/Values';
 import ConstructorItemPanel from './ConstructorItemPanel';
 import Col from 'react-bootstrap/Col';
@@ -6,7 +6,6 @@ import Image from 'react-bootstrap/Image'
 import { useApiCall, ApiMethods } from '../../hooks/apiCall'
 import { IGetBgImageRequest } from '../../models/MonumentBuilder';
 import { useUrlBuilder } from '../../hooks/urlBuilder';
-import { IImageUrlResponse } from '../../models/Global';
 import ConstructorItemList from './ConstructorItmeList';
 
 enum ConstructorRightViewTypes {
@@ -31,10 +30,9 @@ interface IImageUrls {
 
 function MonumentConstructor(props: { centerColumnWidth: number }) {
     const { centerColumnWidth } = props
-    const urlBuilder = useUrlBuilder()
     const [rightViewType, setRightViewType] = useState(ConstructorRightViewTypes.ItemPanel)
     const [burialType, setBurialType] = useState(BurialTypes.Single)
-    const getBgImage = useApiCall<IGetBgImageRequest, IImageUrlResponse>("image/background", ApiMethods.GET)
+    const getBgImage = useApiCall<IGetBgImageRequest, Blob>("image/background", ApiMethods.GET)
     const [imageUrls, setImageUrls] = useState({
         background: undefined,
         pedestal: undefined,  // Тумба
@@ -47,6 +45,33 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         vase: undefined,      // Ваза
         lampada: undefined
     } as IImageUrls)
+
+    useEffect(() => {
+        var request: IGetBgImageRequest = {
+            burialType: burialType
+        }
+
+        var bgImageUrl = async () => {
+            const apiResponse = await getBgImage.makeRequest(request)
+            //TODO: apiResponse.apiError
+
+            if (apiResponse.response !== null) {
+                const image: Blob = apiResponse.response
+                const imageUrl = URL.createObjectURL(image)
+
+                setImageUrls({ ...imageUrls, background: imageUrl })
+            }
+        }
+
+        bgImageUrl()
+    }, [])
+
+    function imageOnLoad(e: SyntheticEvent<HTMLImageElement> | undefined) {
+        if (e?.currentTarget.currentSrc) {
+            console.debug("ONLOAD: " + e?.currentTarget.currentSrc)
+            URL.revokeObjectURL(e.currentTarget.currentSrc)
+        }
+    }
 
     function isItemPanel(): boolean {
         return rightViewType === ConstructorRightViewTypes.ItemPanel
@@ -72,36 +97,16 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         setRightViewType(ConstructorRightViewTypes.ItemDetails)
     }
 
-    useEffect(() => {
-        var request: IGetBgImageRequest = {
-            burialType: burialType
-        }
-
-        var bgImageUrl = async () => {
-            const apiResponse = await getBgImage.makeRequest(request)
-            //TODO: apiResponse.apiError
-
-            if (apiResponse.response !== null && apiResponse.response.imageUrl) {
-                const imagePath: string = apiResponse.response.imageUrl
-                const imageUrl = urlBuilder.buildApiUrl(imagePath)
-
-               setImageUrls({ ...imageUrls, background: imageUrl })
-            }
-        }
-
-        bgImageUrl()
-    },[])
-
     return (
     <>
         <Col lg={centerColumnWidth} className="constructor-image-container">
-            {imageUrls.background && <Image src={imageUrls.background} className="position-relative top-0 start-0" />}
-            {imageUrls.pedestal && <Image src={imageUrls.pedestal} className="position-relative top-0 start-0" />}
+                {imageUrls.background && <Image src={imageUrls.background} className="position-relative top-0 start-0" onLoad={imageOnLoad} />}
+                {imageUrls.pedestal && <Image src={imageUrls.pedestal} className="position-relative top-0 start-0" />}
         </Col>
         <Col>
-            {isItemPanel() && <ConstructorItemPanel showItemList={ showItemList } />}
+                {isItemPanel() && <ConstructorItemPanel showItemList={ showItemList } />}
                 {isItemList() && <ConstructorItemList showItemDetails={showItemDetails} backToMenu={showItemPanel} />}
-            {isItemDetails() && <p>Item Details</p>}
+                {isItemDetails() && <p>Item Details</p>}
         </Col>
     </>
   );

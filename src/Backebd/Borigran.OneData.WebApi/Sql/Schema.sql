@@ -52,7 +52,6 @@ alter table TConstructorItemPositions  drop constraint FK_ConstructorItem_Positi
     create table TConstructorItems (
         ConstructorItemID INT IDENTITY NOT NULL,
        Name NVARCHAR(255) not null,
-       ImageName NVARCHAR(255) null,
        Price DECIMAL(19,5) not null,
        ArticleNumber NVARCHAR(255) not null,
        Material NVARCHAR(255) not null,

@@ -98,7 +98,7 @@ namespace Borigran.OneData.WebApi
                 .InstancePerLifetimeScope();
 
             builder.RegisterType<CItemImageProvider>()
-                .As<ICItemImageProvider<string>>()
+                .As<ICItemImageProvider<Stream>>()
                 .InstancePerDependency();
         }
 
@@ -135,12 +135,12 @@ namespace Borigran.OneData.WebApi
                 Secure = CookieSecurePolicy.Always
             });
 
-            app.UseStaticFiles(new StaticFileOptions
+            /*app.UseStaticFiles(new StaticFileOptions
             {
                 FileProvider = new PhysicalFileProvider(
                     Path.Combine(env.ContentRootPath, "StaticResources")),
                 RequestPath = "/resources"
-            });
+            });*/
 
             app.UseAuthentication();
             app.UseHttpsRedirection();

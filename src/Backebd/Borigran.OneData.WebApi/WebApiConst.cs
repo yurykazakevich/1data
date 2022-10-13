@@ -6,4 +6,8 @@
         public const string ExternalEndPoint = "AllowAny";
     }
 
+    public static class WebApiConst
+    {
+        public static string ImageContentType = "image/png";
+    }
 }

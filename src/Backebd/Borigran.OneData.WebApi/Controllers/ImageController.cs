@@ -1,26 +1,23 @@
 ﻿using Borigran.OneData.Domain.Values;
 using Borigran.OneData.Platform.Helpers;
-using Borigran.OneData.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
 
 namespace Borigran.OneData.WebApi.Controllers
 {
     public class ImageController : ApiControllerBase
     {
-        private readonly ICItemImageProvider<string> imageProvider;
+        private readonly ICItemImageProvider<Stream> imageProvider;
 
-        public ImageController(ICItemImageProvider<string> imageProvider)
+        public ImageController(ICItemImageProvider<Stream> imageProvider)
         {
             this.imageProvider = imageProvider;
         }
 
         [HttpGet("background")]
-        public ImageUrlResponse GetBacgroundImage(BurialTypes burialType)
+        public FileStreamResult GetBacgroundImage([FromQuery]BurialTypes burialType)
         {
-            return new ImageUrlResponse
-            {
-                ImageUrl = imageProvider.GetBacgroundImage(burialType)
-            };
+            return File(imageProvider.GetBacgroundImage(burialType), WebApiConst.ImageContentType);
         }                
     }
 }
