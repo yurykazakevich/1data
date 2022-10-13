@@ -27,8 +27,7 @@ alter table TConstructorItemPositions  drop constraint FK_ConstructorItem_Positi
        RefreshToken NVARCHAR(255) null,
        RefreshTokenExpired DATETIME2 null,
        IsPhisical BIT not null,
-       primary key (UserID),
-      unique (PhoneNumber)
+       primary key (UserID)
     )
 
     create table TAreas (
