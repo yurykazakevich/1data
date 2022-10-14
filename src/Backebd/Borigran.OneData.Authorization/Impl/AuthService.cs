@@ -118,8 +118,8 @@ namespace Borigran.OneData.Authorization.Impl
         private async Task<AuthTokenDto> GenerateTokensForUser(User user)
         {
             DateTime tokenGeneratedTime = DateTime.UtcNow;
-            SetRefreshTokenForUser(user, tokenGeneratedTime);
 
+            SetRefreshTokenForUser(user, tokenGeneratedTime);
             user = await userRepository.SaveOrUpdateAsync(user);
 
             return new AuthTokenDto
@@ -135,9 +135,16 @@ namespace Borigran.OneData.Authorization.Impl
 
         private void SetRefreshTokenForUser(User user, DateTime now)
         {
-            user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpired = now.ToLocalTime()
+            DateTime expiredAt = now.ToLocalTime()
                 .AddMinutes(authOptions.RefreshTokenExpired);
+
+            //Filter duplicate requests
+            if(!user.RefreshTokenExpired.HasValue ||
+                expiredAt.Subtract(user.RefreshTokenExpired.Value).TotalSeconds >= 30)
+            {
+                user.RefreshToken = GenerateRefreshToken();
+                user.RefreshTokenExpired = expiredAt;
+            }
         }
 
         private string GenerateRefreshToken()

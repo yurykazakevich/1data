@@ -69,7 +69,7 @@ window.env = {
   "REACT_APP_LOGIN_URL": "/auth/phone",
   "REACT_APP_MONUMENTBUILDER_URL": "/monumentbuilder",
   "REACT_APP_VERIFICATION_CODE_LENGTH": "6",
-  "ServiceHubLogSessionKey": "29484236",
+  "ServiceHubLogSessionKey": "6DF85E7E",
   "SESSIONNAME": "Console",
   "SignInWithHomeTenantOnly": "False",
   "SystemDrive": "C:",

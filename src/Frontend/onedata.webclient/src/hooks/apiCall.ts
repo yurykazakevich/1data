@@ -53,19 +53,17 @@ export function useApiCall<TRequest extends {} , TResponse>(url: string, method:
         var requestConfig: AxiosRequestConfig = {
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            withCredentials: true
         }
 
         var axiosResponse: AxiosResponse<TResponse, any>
-        const apiUrl = urlBuilder.buildApiUrl("auth/refresh")
+        const apiUrl = urlBuilder.buildApiUrl("auth/token/refresh")
 
         var request: IRefreshTokenRequest = {
             expiredToken: token,
             userId: userId
         } 
-        if (url.startsWith("image")) {
-            requestConfig.responseType = "blob"
-        }
 
         axiosResponse = await axios.patch<TResponse>(apiUrl, request, requestConfig)
         return axiosResponse.data as ITokenResponse

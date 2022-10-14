@@ -15,7 +15,6 @@ namespace Borigran.OneData.WebApi.Controllers
 {
     public class AuthController : ApiControllerBase
     {
-        private const string RefreshTokenCookieKey = "Burial.Id";
         private readonly IMapper mapper;
         private readonly IAuthService authService;
 
@@ -59,12 +58,13 @@ namespace Borigran.OneData.WebApi.Controllers
         [HttpPatch("token/refresh")]
         public async Task<TokenResponse> RefreshToken([FromBody] RefreshTokenRequest request)
         {
-            string refreshToken;
+            string refreshToken = RefreshTokenCookieManager.GetToken(Request);
 
-            if (!Request.Cookies.TryGetValue(RefreshTokenCookieKey, out refreshToken))
+            if (string.IsNullOrEmpty(refreshToken))
             {
                 throw new SecurityTokenException("Could not find refresh token cookie");
             }
+
             AuthTokenDto authToken = await authService.RefreshExpiredTokenAsync(request.ExpiredToken,
                 refreshToken, request.UserId);
 
