@@ -42,10 +42,14 @@ namespace Borigran.OneData.Platform.Dependencies
 
         private IEnumerable<Assembly> ScanForLinkedAssemblies()
         {
-            return AppDomain.CurrentDomain.GetAssemblies()
-                // exclude dynamic assemblies, nhibernate can't scan them
+            var projectAssemblies = new List<Assembly>() { Assembly.GetEntryAssembly() };
+            projectAssemblies.AddRange(Assembly.GetEntryAssembly().GetReferencedAssemblies()
+                .Select(x => Assembly.Load(x)));
+            
+            return projectAssemblies
+                // exclude dynamic assemblies
                 .Where(a => !a.IsDynamic)
-                // exclude self
+                // filter the project namespace
                 .Where(a => a.FullName.StartsWith(AssemblyNamePrefix))
                 .ToArray();
         }

@@ -5,6 +5,7 @@ namespace Borigran.OneData.Business
 {
     public interface IConstructorService
     {
-        Task<IEnumerable<ConstructorListItemDto>> GetConstructorItemList(CItemTypes itemType);
+        Task<IEnumerable<ConstructorItemDto>> GetConstructorItemList(
+            BurialTypes burialType, CItemTypes itemType);
     }
 }

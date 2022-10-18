@@ -7,6 +7,7 @@ namespace Borigran.OneData.WebApi.Models.Constructor
         public ItemListRequestValidator()
         {
             RuleFor(x => x.ItemType).NotEmpty();
+            RuleFor(x => x.BurialType).NotEmpty();
         }
     }
 }
