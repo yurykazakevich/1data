@@ -39,8 +39,7 @@ namespace Borigran.OneData.WebApi.Controllers
                 {
                     var responseItem = mapper.Map<ListItemResponse>(dto);
                     responseItem.Position = position.Position;
-                    using (var imageStream = imageProvider.
-                        GetItemImage(request.BurialType,
+                    using (var imageStream = imageProvider.GetItemImage(request.BurialType, request.BurialPosition,
                         request.ItemType, responseItem.Categories, position.ImageName))
                     {
                         using(var buffer = new MemoryStream())

@@ -3,7 +3,7 @@
     public enum BurialPositions
     {
         Left = 1,
-        Cente = 2,
+        Center = 2,
         Right = 3
     }
 }

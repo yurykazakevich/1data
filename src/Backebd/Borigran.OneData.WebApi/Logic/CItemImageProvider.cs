@@ -33,10 +33,16 @@ namespace Borigran.OneData.WebApi.Logic
             return File.OpenRead(path);
         }
 
-        public Stream GetItemImage(BurialTypes burialType, 
+        public Stream GetItemImage(BurialTypes burialType, BurialPositions burialPosition,
             CItemTypes itemType, IEnumerable<string> categoryNames,  string imageName)
         {
-            var imagePath = GetItemImagePath(burialType, itemType, categoryNames, imageName);
+            var relativeImagePath = GetItemImagePath(burialType, burialPosition, 
+                itemType, categoryNames, imageName);
+
+            var imagePath = Path.Combine(
+                Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                relativeImagePath);
+
             imagePath = ValidateImageFilePath(imagePath);
 
             return File.OpenRead(imagePath);
@@ -53,13 +59,13 @@ namespace Borigran.OneData.WebApi.Logic
             return path;
         }
 
-        private string GetItemImagePath(BurialTypes burialType,
+        private string GetItemImagePath(BurialTypes burialType, BurialPositions burialPosition,
             CItemTypes itemType, IEnumerable<string> categoryNames, string imageName)
         {
-            var imagePathSegments = new List<string>() { CItemFolderPath };
+            var imagePathSegments = new List<string>(20) { CItemFolderPath };
             imagePathSegments.Add(burialType.ToString());
             imagePathSegments.Add("2.Гранитные комплектующие");
-
+            imagePathSegments.AddRange(GetfolderForBurialPosition(burialType, burialPosition, itemType));
             imagePathSegments.AddRange(GetFolderForItemType(itemType));
             imagePathSegments.AddRange(categoryNames);
             imagePathSegments.Add(imageName + CItemImageExtension);
@@ -67,11 +73,35 @@ namespace Borigran.OneData.WebApi.Logic
             return Path.Combine(imagePathSegments.ToArray());
         }
 
+        private IEnumerable<string> GetfolderForBurialPosition(BurialTypes burialType,
+            BurialPositions burialPosition, CItemTypes itemType)
+        {
+            var result = new List<string>(1);
+
+            if(burialType != BurialTypes.Single && IsPositionDepended(itemType))
+            {
+                switch(burialPosition)
+                {
+                    case BurialPositions.Left:
+                        result.Add("1.Левое захоронение");
+                        break;
+                    case BurialPositions.Right:
+                        result.Add("2.Правое захоронение");
+                        break;
+                    case BurialPositions.Center:
+                        result.Add("3.Захоронение по центру");
+                        break;
+                }
+            }
+
+            return result;
+        }
+
         private IEnumerable<string> GetFolderForItemType(CItemTypes itemType)
         {
             var result = new List<string>(2);
 
-            if(itemType >= CItemTypes.Tip)
+            if(IsAddon(itemType))
             {
                 result.Add("6.Дополнения");
             }
@@ -109,6 +139,16 @@ namespace Borigran.OneData.WebApi.Logic
             }
 
             return result;
+        }
+
+        private bool IsAddon(CItemTypes itemType)
+        {
+            return itemType >= CItemTypes.Tip;
+        }
+
+        private bool IsPositionDepended(CItemTypes itemType)
+        {
+            return itemType < CItemTypes.Boder;
         }
     }
 }

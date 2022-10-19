@@ -8,6 +8,7 @@ namespace Borigran.OneData.WebApi.Models.Constructor
         {
             RuleFor(x => x.ItemType).NotEmpty();
             RuleFor(x => x.BurialType).NotEmpty();
+            RuleFor(x => x.BurialPosition).NotEmpty();
         }
     }
 }

@@ -199,9 +199,9 @@ SET IDENTITY_INSERT [dbo].[TConstructorItems] OFF
 
 INSERT INTO [dbo].[TConstructorItemPositions]
            ([ImageName],[Position],[ConstructorItemId])
-     VALUES ('40x20x15',0,1)
-	 ,('50x20x15',0,2)
-	 ,('60x20x15',0,3)
+     VALUES ('Тумба 40x20x15',0,1)
+	 ,('Тумба 50x20x15',0,2)
+	 ,('Тумба 60x20x15',0,3)
 	 ,('100х40х8х5',0,4)
 	 ,('100х50х8х5',0,5)
 	 ,('100х60х8х5',0,6)
