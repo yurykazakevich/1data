@@ -46,7 +46,6 @@ namespace Borigran.OneData.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
-            services.AddAutoMapper(assemblyScanner.AssembliesToScan());
             services.AddCors(options =>
             {
                 string[] allowedHosts = Configuration.GetValue<string>("ClientUrls")

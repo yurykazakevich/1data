@@ -39,7 +39,7 @@ namespace Borigran.OneData.WebApi.Controllers
                     var responseItem = mapper.Map<ListItemResponse>(dto);
                     responseItem.Position = position.Position;
                     using (var imageStream = imageProvider.
-                        GetItemImage(request.BurialType, 
+                        GetItemImage(request.BurialType,
                         request.ItemType, responseItem.Categories, position.ImageName))
                     {
                         const int bufferSize = 1024;
@@ -49,8 +49,8 @@ namespace Borigran.OneData.WebApi.Controllers
 
                         while (readPosition < imageStream.Length)
                         {
-                            await imageStream.ReadAsync(buffer, readPosition, bufferSize);
-                            readPosition += bufferSize;
+                            var read = imageStream.Read(buffer, readPosition, bufferSize);
+                            readPosition += read;
                             image.AddRange(buffer);
                         }
 

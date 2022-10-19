@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -34,7 +35,7 @@ namespace Borigran.OneData.Platform.Dependencies
             asm => asm.FullName.StartsWith("DynamicProxyGenAssembly2", StringComparison.InvariantCulture),
         };
 
-        public Assembly[] AssembliesToScan()
+        public Assembly[] ProjectAssemblies()
         {
             var assemblies = ScanForLinkedAssemblies().ToArray();
             return assemblies;
@@ -42,16 +43,24 @@ namespace Borigran.OneData.Platform.Dependencies
 
         private IEnumerable<Assembly> ScanForLinkedAssemblies()
         {
-            var projectAssemblies = new List<Assembly>() { Assembly.GetEntryAssembly() };
-            projectAssemblies.AddRange(Assembly.GetEntryAssembly().GetReferencedAssemblies()
-                .Select(x => Assembly.Load(x)));
-            
-            return projectAssemblies
+            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies()
                 // exclude dynamic assemblies
                 .Where(a => !a.IsDynamic)
                 // filter the project namespace
                 .Where(a => a.FullName.StartsWith(AssemblyNamePrefix))
-                .ToArray();
+                .ToList();
+
+            var path = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+            var projectAssemblyFiles = Directory.GetFiles(path, $"{AssemblyNamePrefix}*.dll");
+            foreach (var file in projectAssemblyFiles)
+            {
+                if(loadedAssemblies.All(x => x.GetName().Name != Path.GetFileNameWithoutExtension(file)))
+                {
+                    loadedAssemblies.Add(Assembly.LoadFrom(file));
+                }
+            }
+            
+            return loadedAssemblies;
         }
 
         protected virtual IEnumerable<Func<Assembly, bool>> AutoRegisterIgnoredAssemblies

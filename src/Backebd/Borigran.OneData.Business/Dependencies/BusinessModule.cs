@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Borigran.OneData.Business.Impl;
 using Borigran.OneData.Platform.Dependencies;
-using Borigran.OneData.Platform.Helpers;
 
 namespace Borigran.OneData.Business.Dependencies
 {

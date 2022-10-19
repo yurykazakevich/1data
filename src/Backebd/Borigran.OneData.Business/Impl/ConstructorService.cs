@@ -4,9 +4,7 @@ using Borigran.OneData.Domain.Entities;
 using Borigran.OneData.Domain.Values;
 using Borigran.OneData.Platform.NHibernate.Repository;
 using Borigran.OneData.Platform.NHibernate.Transactions;
-using NHibernate.Criterion;
 using NHibernate.Linq;
-using System.Linq.Expressions;
 
 namespace Borigran.OneData.Business.Impl
 {

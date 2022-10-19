@@ -1,9 +1,11 @@
 ﻿using Castle.DynamicProxy;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Borigran.OneData.Platform
 {
+    [DebuggerStepThrough]
     public abstract class BaseInterceptor<TState> : IInterceptor where TState : class
     {
         public void Intercept(IInvocation invocation)

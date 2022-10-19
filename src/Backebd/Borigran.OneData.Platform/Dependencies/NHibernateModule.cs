@@ -1,8 +1,6 @@
 ﻿using Autofac;
-using Autofac.Extras.DynamicProxy;
 using Borigran.OneData.Platform.NHibernate.Repository;
 using Borigran.OneData.Platform.NHibernate.Transactions;
-using FluentNHibernate.Automapping;
 using FluentNHibernate.Cfg.Db;
 using FluentNHibernate.Cfg;
 using NHibernate.Tool.hbm2ddl;
@@ -41,9 +39,6 @@ namespace Borigran.OneData.Platform.Dependencies
 
             var cfg = BuildConfiguration();
 
-            //var persistenceModel = BuildPersistenceModel();
-            //persistenceModel.Configure(cfg);
-
             var sessionFactory = BuildSessionFactory(cfg);
 
             RegisterConponents(builder, cfg, sessionFactory);
@@ -54,17 +49,18 @@ namespace Borigran.OneData.Platform.Dependencies
             var config = Fluently.Configure()
                 .Database(MsSqlConfiguration.MsSql2012.ConnectionString(dbConnectionString))
                 .ExposeConfiguration(c => c.SetProperty(Environment.ReleaseConnections, "on_close"))
-                .ExposeConfiguration(c => c.SetProperty(Environment.Hbm2ddlAuto, "create"))
+                .ExposeConfiguration(c => c.SetProperty(Environment.Hbm2ddlAuto, "validate"))
                 .ExposeConfiguration(c => c.SetProperty(Environment.ShowSql, "true"))
                 .Mappings(m =>
                 {
-                    foreach (Assembly assembly in assemblyScanner.AssembliesToScan())
+                    foreach (Assembly assembly in assemblyScanner.ProjectAssemblies())
                     {
                         m.FluentMappings.AddFromAssembly(assembly);
                     }
                 })
                 .ExposeConfiguration(BuildSchema)
-                .BuildConfiguration();
+                .BuildConfiguration()
+                ;
 
             if (config == null)
                 throw new Exception("Cannot build NHibernate configuration");
@@ -84,9 +80,17 @@ namespace Borigran.OneData.Platform.Dependencies
 
         public void RegisterConponents(ContainerBuilder builder, Configuration config, ISessionFactory sessionFactory)
         {
-            builder.RegisterInstance(config).As<Configuration>().SingleInstance();
-            builder.RegisterInstance(sessionFactory).As<ISessionFactory>().SingleInstance();
-            builder.Register(x => x.Resolve<ISessionFactory>().OpenSession()).As<ISession>().InstancePerLifetimeScope();
+            builder.RegisterInstance(config)
+                .As<Configuration>()
+                .SingleInstance();
+
+            builder.RegisterInstance(sessionFactory)
+                .As<ISessionFactory>()
+                .SingleInstance();
+
+            builder.Register(x => x.Resolve<ISessionFactory>().OpenSession())
+                .As<ISession>()
+                .InstancePerLifetimeScope();
         }
 
         private static void BuildSchema(Configuration config)
