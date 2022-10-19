@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Borigran.OneData.WebApi.Controllers
 {
@@ -42,19 +43,12 @@ namespace Borigran.OneData.WebApi.Controllers
                         GetItemImage(request.BurialType,
                         request.ItemType, responseItem.Categories, position.ImageName))
                     {
-                        const int bufferSize = 1024;
-                        var buffer = new byte[bufferSize];
-                        var image = new List<byte>((int)imageStream.Length);
-                        int readPosition = 0;
-
-                        while (readPosition < imageStream.Length)
+                        using(var buffer = new MemoryStream())
                         {
-                            var read = imageStream.Read(buffer, readPosition, bufferSize);
-                            readPosition += read;
-                            image.AddRange(buffer);
+                            await imageStream.CopyToAsync(buffer);
+                            responseItem.Image = Convert.ToBase64String(buffer.ToArray());
                         }
-
-                        responseItem.Image = Convert.ToBase64String(image.ToArray());
+                        
                     }
                     result.Add(responseItem);
                 }
