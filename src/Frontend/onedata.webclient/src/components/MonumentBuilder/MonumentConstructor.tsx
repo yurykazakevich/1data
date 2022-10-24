@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, ReactEventHandler, SyntheticEvent } from 'react';
-import { BurialTypes, CItemTypes } from '../../models/Values';
+import { BurialPositions, BurialTypes, CItemTypes } from '../../models/Values';
 import ConstructorItemPanel from './ConstructorItemPanel';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
@@ -30,9 +30,11 @@ interface IImageUrls {
 
 function MonumentConstructor(props: { centerColumnWidth: number }) {
     const { centerColumnWidth } = props
+    const getBgImage = useApiCall<IGetBgImageRequest, Blob>("image/background", ApiMethods.GET)
+
     const [rightViewType, setRightViewType] = useState(ConstructorRightViewTypes.ItemPanel)
     const [burialType, setBurialType] = useState(BurialTypes.Single)
-    const getBgImage = useApiCall<IGetBgImageRequest, Blob>("image/background", ApiMethods.GET)
+    const [burialPosition, setBurialPosition] = useState(BurialPositions.Center)
     const [imageUrls, setImageUrls] = useState({
         background: undefined,
         pedestal: undefined,  // Тумба
@@ -45,6 +47,8 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         vase: undefined,      // Ваза
         lampada: undefined
     } as IImageUrls)
+
+    var selectedItemType: CItemTypes = CItemTypes.Pedestal
 
     useEffect(() => {
         var request: IGetBgImageRequest = {
@@ -89,7 +93,8 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         setRightViewType(ConstructorRightViewTypes.ItemPanel)
     }
 
-    function showItemList(itemType: string) {
+    function showItemList(itemType: CItemTypes) {
+        selectedItemType = itemType
         setRightViewType(ConstructorRightViewTypes.ItemList)
     }
 
@@ -105,7 +110,12 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         </Col>
         <Col>
                 {isItemPanel() && <ConstructorItemPanel showItemList={ showItemList } />}
-                {isItemList() && <ConstructorItemList showItemDetails={showItemDetails} backToMenu={showItemPanel} />}
+                {isItemList() && <ConstructorItemList
+                    itemType={selectedItemType}
+                    burialPosition={burialPosition}
+                    burialType={burialType}
+                    showItemDetails={showItemDetails}
+                    backToMenu={showItemPanel} />}
                 {isItemDetails() && <p>Item Details</p>}
         </Col>
     </>

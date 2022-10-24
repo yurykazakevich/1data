@@ -1,17 +1,18 @@
-﻿import React from 'react';
-import Container from 'react-bootstrap/Container';
+﻿import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import { CItemTypes } from '../../models/Values';
 
-function ConstructorItemPanel(props: { showItemList: (itemType: string) => void }) {
+function ConstructorItemPanel(props: { showItemList: (itemType: CItemTypes) => void }) {
     const { showItemList } = props
 
   return (
       <Container fluid className='overflow-hidden p-0 h-100 item-panel'>
           <Row className="p-1 item-panel-row">
               <Col>
-                  <Button variant="outline-dark" className='btn-block' size="sm" onClick={() => { showItemList('1') }}>Тумба</Button>{' '}
+                  <Button variant="outline-dark" className='btn-block' size="sm"
+                      onClick={() => { showItemList(CItemTypes.Pedestal) }}>Тумба</Button>{' '}
               </Col>
           </Row>
           <Row className="p-1 item-panel-row">
