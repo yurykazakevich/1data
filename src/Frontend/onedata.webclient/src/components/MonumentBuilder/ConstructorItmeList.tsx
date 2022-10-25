@@ -46,6 +46,9 @@ function ConstructorItemList(props: IConstructorItemListProps) {
                 setItemListData(listData)
             }
         }
+
+        callGetItemList()
+
     }, [props.itemType, props.burialPosition, props.burialType])
 
     return (

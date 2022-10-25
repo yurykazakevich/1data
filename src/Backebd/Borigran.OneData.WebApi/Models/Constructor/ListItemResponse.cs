@@ -9,6 +9,7 @@ namespace Borigran.OneData.WebApi.Models.Constructor
         public string Name { get; set; }
         public string Size { get; set; }
         public decimal Price { get; set; }
+        public string Currency { get; set; }
         public ItemPositions Position { get; set; }
         public string Image { get; set; }
         public IList<string> Categories { get; set; }

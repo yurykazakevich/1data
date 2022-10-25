@@ -4,6 +4,7 @@ using Borigran.OneData.Authorization;
 using Borigran.OneData.Authorization.Dependencies;
 using Borigran.OneData.Authorization.Impl;
 using Borigran.OneData.Business.Dependencies;
+using Borigran.OneData.Platform;
 using Borigran.OneData.Platform.Dependencies;
 using Borigran.OneData.Platform.Helpers;
 using Borigran.OneData.WebApi.AppExtensions;
@@ -30,6 +31,7 @@ namespace Borigran.OneData.WebApi
     public class Startup
     {
         private AuthOptions authOptions;
+        private AppSettings appSettings;
 
         private readonly AssemblyScanner assemblyScanner = new AssemblyScanner();
 
@@ -46,6 +48,8 @@ namespace Borigran.OneData.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
             authOptions = Configuration.GetSection("AuthOptions").Get<AuthOptions>();
+            appSettings = Configuration.GetSection("AppSettings").Get<AppSettings>();
+
             services.AddCors(options =>
             {
                 string[] allowedHosts = Configuration.GetValue<string>("ClientUrls")
@@ -77,9 +81,9 @@ namespace Borigran.OneData.WebApi
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            // Register your own things directly with Autofac here. Don't
-            // call builder.Populate(), that happens in AutofacServiceProviderFactory
-            // for you.
+            builder.RegisterInstance(appSettings)
+                .As<AppSettings>();
+
             builder.RegisterModule(new OneDataAutofacModule(Configuration));
             builder.RegisterModule(new AuthorithationModule(authOptions));
             builder.RegisterModule(new BusinessModule());

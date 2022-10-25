@@ -2,7 +2,6 @@
 import { useContext } from 'react'
 import { LoaderContext } from '../context/LoaderContext'
 import { ModalContext } from '../context/ModalContext'
-import { IValidationErrorResponse, IErrorResponse } from '../models/ErrorModels'
 import { IRefreshTokenRequest, ITokenResponse } from '../models/AuthModels'
 import { GlobalStrings } from '../models/Values'
 import { useJwtData } from './jwtData'
