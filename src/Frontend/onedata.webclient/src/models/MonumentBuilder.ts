@@ -27,6 +27,5 @@ export interface ISelectedCItem {
     price: number,
     currency: string,
     position: ItemPositions,
-    imageUrl: string,
-    selected: boolean
+    imageUrl: string
 }

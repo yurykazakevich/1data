@@ -15,7 +15,14 @@ namespace Borigran.OneData.WebApi.Models.AutoMapperProfiles
                 .ForMember(dst => dst.Image, opt => opt.Ignore())
                 .ForMember(dst => dst.Position, opt => opt.Ignore())
                 .ForMember(dst => dst.Size, opt => opt.MapFrom(src => SizeToString(src)))
-                .ForMember(dst => dst.Categories, opt => opt.MapFrom(src => MapCategories(src)));
+                .ForMember(dst => dst.Categories, opt => opt.MapFrom(src => MapCategories(src)))
+                .AfterMap((src, dst) =>
+                {
+                    if(dst.Name.EndsWith(dst.Size))
+                    {
+                        dst.Name = dst.Name.Substring(0, dst.Name.Length - dst.Size.Length).Trim();
+                    }
+                });
         }
 
         private IList<string> MapCategories(ConstructorItemDto src)
@@ -34,9 +41,9 @@ namespace Borigran.OneData.WebApi.Models.AutoMapperProfiles
 
         private string SizeToString(ConstructorItemDto src)
         {
-            const string sizeSeparator = "x";
+            const string sizeSeparator = "х";
 
-            var sizeBuilder = new StringBuilder(src.Length);
+            var sizeBuilder = new StringBuilder(src.Length.ToString());
             if (src.Width > 0)
             {
                 sizeBuilder.Append(sizeSeparator);

@@ -13,7 +13,7 @@ namespace Borigran.OneData.Business.AutoMapperProfiles
             CreateMap<ConstructorItemPosition, ConstructorItemPositionDto>();
 
             CreateMap<ConstructorItem, ConstructorItemDto>()
-                .ForMember(dst => dst.Currency, opt => opt.MapFrom(appSettings.DefaultCurrency));
+                .ForMember(dst => dst.Currency, opt => opt.MapFrom(src => appSettings.DefaultCurrency));
         }
     }
 }

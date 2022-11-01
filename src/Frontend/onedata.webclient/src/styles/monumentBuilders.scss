@@ -32,5 +32,18 @@ $stepNumberContainerWidth: 30px;
 }
 
 .item-card {
+    font-size: rfs-fluid-value(0.9rem);
 
+    button {
+        font-size: rfs-fluid-value(0.9rem);
+    }
+
+    .price-container {
+        font-size: rfs-value(0.8rem);
+    }
+}
+
+.item-card-selected {
+    @extend .shadow;
+    background-color: #F7F7F7;
 }

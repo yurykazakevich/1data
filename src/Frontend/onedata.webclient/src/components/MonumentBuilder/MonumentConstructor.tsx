@@ -4,7 +4,7 @@ import ConstructorItemPanel from './ConstructorItemPanel';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
 import { useApiCall, ApiMethods } from '../../hooks/apiCall'
-import { IGetBgImageRequest } from '../../models/MonumentBuilder';
+import { IGetBgImageRequest, ISelectedCItem } from '../../models/MonumentBuilder';
 import { useUrlBuilder } from '../../hooks/urlBuilder';
 import ConstructorItemList from './ConstructorItmeList';
 
@@ -102,6 +102,10 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
         setRightViewType(ConstructorRightViewTypes.ItemDetails)
     }
 
+    function handleItemSelected(selectedItem: ISelectedCItem) {
+        alert('Item ' + selectedItem.id + ' seleted')
+    }
+
     return (
     <>
         <Col lg={centerColumnWidth} className="constructor-image-container">
@@ -115,6 +119,7 @@ function MonumentConstructor(props: { centerColumnWidth: number }) {
                     burialPosition={burialPosition}
                     burialType={burialType}
                     showItemDetails={showItemDetails}
+                    handleItemSelected={handleItemSelected}
                     backToMenu={showItemPanel} />}
                 {isItemDetails() && <p>Item Details</p>}
         </Col>
